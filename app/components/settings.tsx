@@ -123,6 +123,7 @@ export function Settings(props: { closeSettings: () => void }) {
               onClose={() => setShowEmojiPicker(false)}
               content={
                 <EmojiPicker
+                  getEmojiUrl={(unified=config.avatar) => `https://cdn.quanquan.cyou/npm/emoji-datasource-apple/img/apple/64/${unified}.png`}
                   lazyLoadEmojis
                   theme={EmojiTheme.AUTO}
                   onEmojiClick={(e) => {

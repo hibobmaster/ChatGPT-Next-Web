@@ -59,7 +59,7 @@ export function Avatar(props: { role: Message["role"] }) {
 
   return (
     <div className={styles["user-avtar"]}>
-      <Emoji unified={config.avatar} size={18} />
+      <Emoji unified={config.avatar} size={18} getEmojiUrl={(unified=config.avatar) => `https://cdn.quanquan.cyou/npm/emoji-datasource-apple/img/apple/64/${unified}.png`} />
     </div>
   );
 }
