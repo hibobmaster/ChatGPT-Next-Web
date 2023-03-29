@@ -1,6 +1,17 @@
 name: Publish Docker image
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'docker build output tag'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - latest
+
 
 jobs:
   build:
@@ -25,5 +36,5 @@ jobs:
       - name: Build and push Docker image
       run: |
         docker buildx build --push \
-          --tag hibobmaster/chatgptnextweb:test \
+          --tag hibobmaster/chatgptnextweb:${{ github.event.inputs.tag }} \
           --platform linux/amd64,linux/arm/v7,linux/arm64 .
