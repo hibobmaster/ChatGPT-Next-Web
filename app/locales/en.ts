@@ -53,7 +53,7 @@ const en: LocaleType = {
       Close: "Close",
     },
     Lang: {
-      Name: "语言",
+      Name: "Languages",
       Options: {
         cn: "简体中文",
         en: "English",
