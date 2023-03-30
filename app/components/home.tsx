@@ -61,7 +61,13 @@ export function Avatar(props: { role: Message["role"] }) {
 
   return (
     <div className={styles["user-avtar"]}>
-      <Emoji unified={config.avatar} size={18} getEmojiUrl={(unified=config.avatar) => `https://cdn.quanquan.cyou/npm/emoji-datasource-apple/img/apple/64/${unified}.png`} />
+      <Emoji
+        unified={config.avatar}
+        size={18}
+        getEmojiUrl={(unified = config.avatar) =>
+          `https://cdn.quanquan.cyou/npm/emoji-datasource-apple/img/apple/64/${unified}.png`
+        }
+      />
     </div>
   );
 }
@@ -102,7 +108,7 @@ export function ChatList() {
       state.currentSessionIndex,
       state.selectSession,
       state.removeSession,
-    ]
+    ],
   );
 
   return (
@@ -196,7 +202,7 @@ export function Chat(props: {
       setPromptHints(promptStore.search(text));
     },
     100,
-    { leading: true, trailing: true }
+    { leading: true, trailing: true },
   );
 
   const onPromptSelect = (prompt: Prompt) => {
@@ -210,7 +216,7 @@ export function Chat(props: {
     if (!dom) return;
     const paddingBottomNum: number = parseInt(
       window.getComputedStyle(dom).paddingBottom,
-      10
+      10,
     );
     dom.scrollTop = dom.scrollHeight - dom.offsetHeight + paddingBottomNum;
   };
@@ -300,7 +306,7 @@ export function Chat(props: {
               preview: true,
             },
           ]
-        : []
+        : [],
     )
     .concat(
       userInput.length > 0
@@ -312,7 +318,7 @@ export function Chat(props: {
               preview: true,
             },
           ]
-        : []
+        : [],
     );
 
   // auto scroll
@@ -340,7 +346,7 @@ export function Chat(props: {
               const newTopic = prompt(Locale.Chat.Rename, session.topic);
               if (newTopic && newTopic !== session.topic) {
                 chatStore.updateCurrentSession(
-                  (session) => (session.topic = newTopic!)
+                  (session) => (session.topic = newTopic!),
                 );
               }
             }}
@@ -439,6 +445,7 @@ export function Chat(props: {
                       className="markdown-body"
                       style={{ fontSize: `${fontSize}px` }}
                       onContextMenu={(e) => onRightClick(e, message)}
+                      onDoubleClickCapture={() => setUserInput(message.content)}
                     >
                       <Markdown content={message.content} />
                     </div>
@@ -585,7 +592,7 @@ export function Home() {
       state.newSession,
       state.currentSessionIndex,
       state.removeSession,
-    ]
+    ],
   );
   const loading = !useHasHydrated();
   const [showSideBar, setShowSideBar] = useState(true);
