@@ -37,6 +37,8 @@ import { REPO_URL } from "../constant";
 import { ControllerPool } from "../requests";
 import { Prompt, usePromptStore } from "../store/prompt";
 
+import { getEmojiUrl } from "@/config";
+
 export function Loading(props: { noLogo?: boolean }) {
   return (
     <div className={styles["loading-content"]}>
@@ -71,7 +73,7 @@ export function Avatar(props: { role: Message["role"] }) {
         unified={config.avatar}
         size={18}
         getEmojiUrl={(unified = config.avatar) =>
-          `https://cdn.quanquan.cyou/npm/emoji-datasource-apple/img/apple/64/${unified}.png`
+          `${getEmojiUrl}/${unified}.png`
         }
       />
     </div>

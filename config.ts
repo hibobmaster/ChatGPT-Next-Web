@@ -1,0 +1,1 @@
+export const getEmojiUrl = "https://cdn.quanquan.cyou/npm/emoji-datasource-apple/img/apple/64/" ?? "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/"

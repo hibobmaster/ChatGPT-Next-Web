@@ -29,6 +29,8 @@ import { UPDATE_URL } from "../constant";
 import { SearchService, usePromptStore } from "../store/prompt";
 import { requestUsage } from "../requests";
 
+import { getEmojiUrl } from "@/config";
+
 function SettingItem(props: {
   title: string;
   subTitle?: string;
@@ -151,7 +153,7 @@ export function Settings(props: { closeSettings: () => void }) {
               content={
                 <EmojiPicker
                   getEmojiUrl={(unified = config.avatar) =>
-                    `https://cdn.quanquan.cyou/npm/emoji-datasource-apple/img/apple/64/${unified}.png`
+                    `${getEmojiUrl}${unified}.png`
                   }
                   lazyLoadEmojis
                   theme={EmojiTheme.AUTO}
