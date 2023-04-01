@@ -8,6 +8,7 @@ import styles from "./home.module.scss";
 
 import SettingsIcon from "../icons/settings.svg";
 import GithubIcon from "../icons/github.svg";
+import SponsorIcon from "../icons/sponsor.svg";
 import ChatGptIcon from "../icons/chatgpt.svg";
 import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
@@ -33,7 +34,7 @@ import {
 import Locale from "../locales";
 
 import dynamic from "next/dynamic";
-import { REPO_URL } from "../constant";
+import { REPO_URL, SPONSOR_URL } from "../constant";
 import { ControllerPool } from "../requests";
 import { Prompt, usePromptStore } from "../store/prompt";
 
@@ -678,6 +679,11 @@ export function Home() {
             <div className={styles["sidebar-action"]}>
               <a href={REPO_URL} target="_blank">
                 <IconButton icon={<GithubIcon />} />
+              </a>
+            </div>
+            <div className={styles["sidebar-action"]}>
+              <a href={SPONSOR_URL} target="_blank">
+                <IconButton icon={<SponsorIcon />} />
               </a>
             </div>
           </div>
