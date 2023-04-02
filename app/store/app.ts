@@ -43,6 +43,7 @@ export interface ChatConfig {
   fontSize: number;
   theme: Theme;
   tightBorder: boolean;
+  sendPreviewBubble: boolean;
 
   disablePromptHint: boolean;
 
@@ -132,6 +133,7 @@ const DEFAULT_CONFIG: ChatConfig = {
   fontSize: 14,
   theme: Theme.Auto as Theme,
   tightBorder: false,
+  sendPreviewBubble: true,
 
   disablePromptHint: false,
 
@@ -384,7 +386,7 @@ export const useChatStore = create<ChatStore>()(
         const config = get().config;
         const n = session.messages.length;
         const recentMessages = session.messages.slice(
-          n - config.historyMessageCount,
+          Math.max(0, n - config.historyMessageCount),
         );
 
         const memoryPrompt = get().getMemoryPrompt();
