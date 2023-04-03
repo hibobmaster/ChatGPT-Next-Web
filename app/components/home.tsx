@@ -159,7 +159,7 @@ function _Home() {
               </a>
             </div>
           </div>
-          <div>
+          <div className={styles["sidebar-action"]}>
             <IconButton
               icon={<AddIcon />}
               text={Locale.Home.NewChat}
