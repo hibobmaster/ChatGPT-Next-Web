@@ -26,7 +26,6 @@ import { Chat } from "./chat";
 import dynamic from "next/dynamic";
 import { REPO_URL, SPONSOR_URL } from "../constant";
 
-import { getEmojiUrl } from "@/config";
 import { ErrorBoundary } from "./error";
 
 export function Loading(props: { noLogo?: boolean }) {
@@ -109,6 +108,8 @@ function _Home() {
           <div className={styles["sidebar-title"]}>ChatGPT Next</div>
           <div className={styles["sidebar-sub-title"]}>
             Build your own AI assistant.
+            <br />
+            如遇4097问题，请尝试清空当前网页数据或使用浏览器隐私模式
           </div>
           <div className={styles["sidebar-logo"]}>
             <ChatGptIcon />
