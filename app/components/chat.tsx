@@ -1,19 +1,16 @@
-"use client";
-
+import { useDebouncedCallback } from "use-debounce";
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 
-import { IconButton } from "./button";
-import styles from "./home.module.scss";
-
-import SettingsIcon from "../icons/settings.svg";
-import GithubIcon from "../icons/github.svg";
-import SponsorIcon from "../icons/sponsor.svg";
-import ChatGptIcon from "../icons/chatgpt.svg";
-
+import SendWhiteIcon from "../icons/send-white.svg";
+import BrainIcon from "../icons/brain.svg";
+import ExportIcon from "../icons/export.svg";
+import MenuIcon from "../icons/menu.svg";
+import CopyIcon from "../icons/copy.svg";
+import DownloadIcon from "../icons/download.svg";
+import LoadingIcon from "../icons/three-dots.svg";
 import BotIcon from "../icons/bot.svg";
 import AddIcon from "../icons/add.svg";
-import LoadingIcon from "../icons/three-dots.svg";
-import CloseIcon from "../icons/close.svg";
+import DeleteIcon from "../icons/delete.svg";
 
 import {
   Message,
@@ -21,35 +18,30 @@ import {
   useChatStore,
   ChatSession,
   BOT_HELLO,
+  ROLES,
 } from "../store";
+
 import {
   copyToClipboard,
   downloadAs,
   isMobileScreen,
   selectOrCopy,
 } from "../utils";
-import Locale from "../locales";
-import { ChatList } from "./chat-list";
-import { Chat } from "./chat";
 
 import dynamic from "next/dynamic";
-import { REPO_URL, SPONSOR_URL } from "../constant";
+
 import { ControllerPool } from "../requests";
 import { Prompt, usePromptStore } from "../store/prompt";
+import Locale from "../locales";
 
-import { getEmojiUrl } from "@/config";
+import { IconButton } from "./button";
+import styles from "./home.module.scss";
+import chatStyle from "./chat.module.scss";
 
-export function Loading(props: { noLogo?: boolean }) {
-  return (
-    <div className={styles["loading-content"]}>
-      {!props.noLogo && <BotIcon />}
-      <LoadingIcon />
-    </div>
-  );
-}
+import { Modal, showModal, showToast } from "./ui-lib";
 
-const Settings = dynamic(async () => (await import("./settings")).Settings, {
-  loading: () => <Loading noLogo />,
+const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
+  loading: () => <LoadingIcon />,
 });
 
 const Emoji = dynamic(async () => (await import("emoji-picker-react")).Emoji, {
@@ -59,7 +51,7 @@ const Emoji = dynamic(async () => (await import("emoji-picker-react")).Emoji, {
 export function Avatar(props: { role: Message["role"] }) {
   const config = useChatStore((state) => state.config);
 
-  if (props.role === "assistant") {
+  if (props.role !== "user") {
     return <BotIcon className={styles["user-avtar"]} />;
   }
 
@@ -70,58 +62,168 @@ export function Avatar(props: { role: Message["role"] }) {
   );
 }
 
-export function ChatItem(props: {
-  onClick?: () => void;
-  onDelete?: () => void;
-  title: string;
-  count: number;
-  time: string;
-  selected: boolean;
-}) {
-  return (
-    <div
-      className={`${styles["chat-item"]} ${
-        props.selected && styles["chat-item-selected"]
-      }`}
-      onClick={props.onClick}
-    >
-      <div className={styles["chat-item-title"]}>{props.title}</div>
-      <div className={styles["chat-item-info"]}>
-        <div className={styles["chat-item-count"]}>
-          {Locale.ChatItem.ChatItemCount(props.count)}
-        </div>
-        <div className={styles["chat-item-date"]}>{props.time}</div>
+function exportMessages(messages: Message[], topic: string) {
+  const mdText =
+    `# ${topic}\n\n` +
+    messages
+      .map((m) => {
+        return m.role === "user" ? `## ${m.content}` : m.content.trim();
+      })
+      .join("\n\n");
+  const filename = `${topic}.md`;
+
+  showModal({
+    title: Locale.Export.Title,
+    children: (
+      <div className="markdown-body">
+        <pre className={styles["export-content"]}>{mdText}</pre>
       </div>
-      <div className={styles["chat-item-delete"]} onClick={props.onDelete}>
-        <DeleteIcon />
-      </div>
-    </div>
-  );
+    ),
+    actions: [
+      <IconButton
+        key="copy"
+        icon={<CopyIcon />}
+        bordered
+        text={Locale.Export.Copy}
+        onClick={() => copyToClipboard(mdText)}
+      />,
+      <IconButton
+        key="download"
+        icon={<DownloadIcon />}
+        bordered
+        text={Locale.Export.Download}
+        onClick={() => downloadAs(mdText, filename)}
+      />,
+    ],
+  });
 }
 
-export function ChatList() {
-  const [sessions, selectedIndex, selectSession, removeSession] = useChatStore(
-    (state) => [
-      state.sessions,
-      state.currentSessionIndex,
-      state.selectSession,
-      state.removeSession,
-    ],
-  );
+function PromptToast(props: {
+  showToast?: boolean;
+  showModal?: boolean;
+  setShowModal: (_: boolean) => void;
+}) {
+  const chatStore = useChatStore();
+  const session = chatStore.currentSession();
+  const context = session.context;
+
+  const addContextPrompt = (prompt: Message) => {
+    chatStore.updateCurrentSession((session) => {
+      session.context.push(prompt);
+    });
+  };
+
+  const removeContextPrompt = (i: number) => {
+    chatStore.updateCurrentSession((session) => {
+      session.context.splice(i, 1);
+    });
+  };
+
+  const updateContextPrompt = (i: number, prompt: Message) => {
+    chatStore.updateCurrentSession((session) => {
+      session.context[i] = prompt;
+    });
+  };
 
   return (
-    <div className={styles["chat-list"]}>
-      {sessions.map((item, i) => (
-        <ChatItem
-          title={item.topic}
-          time={item.lastUpdate}
-          count={item.messages.length}
-          key={i}
-          selected={i === selectedIndex}
-          onClick={() => selectSession(i)}
-          onDelete={() => confirm(Locale.Home.DeleteChat) && removeSession(i)}
-        />
-      ))}
+    <div className={chatStyle["prompt-toast"]} key="prompt-toast">
+      {props.showToast && (
+        <div
+          className={chatStyle["prompt-toast-inner"] + " clickable"}
+          role="button"
+          onClick={() => props.setShowModal(true)}
+        >
+          <BrainIcon />
+          <span className={chatStyle["prompt-toast-content"]}>
+            {Locale.Context.Toast(context.length)}
+          </span>
+        </div>
+      )}
+      {props.showModal && (
+        <div className="modal-mask">
+          <Modal
+            title={Locale.Context.Edit}
+            onClose={() => props.setShowModal(false)}
+            actions={[
+              <IconButton
+                key="copy"
+                icon={<CopyIcon />}
+                bordered
+                text={Locale.Memory.Copy}
+                onClick={() => copyToClipboard(session.memoryPrompt)}
+              />,
+            ]}
+          >
+            <>
+              {" "}
+              <div className={chatStyle["context-prompt"]}>
+                {context.map((c, i) => (
+                  <div className={chatStyle["context-prompt-row"]} key={i}>
+                    <select
+                      value={c.role}
+                      className={chatStyle["context-role"]}
+                      onChange={(e) =>
+                        updateContextPrompt(i, {
+                          ...c,
+                          role: e.target.value as any,
+                        })
+                      }
+                    >
+                      {ROLES.map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      value={c.content}
+                      type="text"
+                      className={chatStyle["context-content"]}
+                      onChange={(e) =>
+                        updateContextPrompt(i, {
+                          ...c,
+                          content: e.target.value as any,
+                        })
+                      }
+                    ></input>
+                    <IconButton
+                      icon={<DeleteIcon />}
+                      className={chatStyle["context-delete-button"]}
+                      onClick={() => removeContextPrompt(i)}
+                      bordered
+                    />
+                  </div>
+                ))}
+
+                <div className={chatStyle["context-prompt-row"]}>
+                  <IconButton
+                    icon={<AddIcon />}
+                    text={Locale.Context.Add}
+                    bordered
+                    className={chatStyle["context-prompt-button"]}
+                    onClick={() =>
+                      addContextPrompt({
+                        role: "system",
+                        content: "",
+                        date: "",
+                      })
+                    }
+                  />
+                </div>
+              </div>
+              <div className={chatStyle["memory-prompt"]}>
+                <div className={chatStyle["memory-prompt-title"]}>
+                  {Locale.Memory.Title} ({session.lastSummarizeIndex} of{" "}
+                  {session.messages.length})
+                </div>
+                <div className={chatStyle["memory-prompt-content"]}>
+                  {session.memoryPrompt || Locale.Memory.EmptyContent}
+                </div>
+              </div>
+            </>
+          </Modal>
+        </div>
+      )}
     </div>
   );
 }
@@ -174,6 +276,26 @@ export function PromptHints(props: {
   );
 }
 
+function useScrollToBottom() {
+  // for auto-scroll
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [autoScroll, setAutoScroll] = useState(true);
+
+  // auto scroll
+  useLayoutEffect(() => {
+    const dom = scrollRef.current;
+    if (dom && autoScroll) {
+      setTimeout(() => (dom.scrollTop = dom.scrollHeight), 1);
+    }
+  });
+
+  return {
+    scrollRef,
+    autoScroll,
+    setAutoScroll,
+  };
+}
+
 export function Chat(props: {
   showSideBar?: () => void;
   sideBarShowing?: boolean;
@@ -191,6 +313,13 @@ export function Chat(props: {
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { submitKey, shouldSubmit } = useSubmitHandler();
+  const { scrollRef, setAutoScroll } = useScrollToBottom();
+  const [hitBottom, setHitBottom] = useState(false);
+
+  const onChatBodyScroll = (e: HTMLElement) => {
+    const isTouchBottom = e.scrollTop + e.clientHeight >= e.scrollHeight - 20;
+    setHitBottom(isTouchBottom);
+  };
 
   // prompt hints
   const promptStore = usePromptStore();
@@ -231,8 +360,12 @@ export function Chat(props: {
       setPromptHints([]);
     } else if (!chatStore.config.disablePromptHint && n < SEARCH_TEXT_LIMIT) {
       // check if need to trigger auto completion
-      if (text.startsWith("/") && text.length > 1) {
-        onSearch(text.slice(1));
+      if (text.startsWith("/")) {
+        let searchText = text.slice(1);
+        if (searchText.length === 0) {
+          searchText = " ";
+        }
+        onSearch(searchText);
       }
     }
   };
@@ -249,7 +382,6 @@ export function Chat(props: {
 
   // stop response
   const onUserStop = (messageIndex: number) => {
-    console.log(ControllerPool, sessionIndex, messageIndex);
     ControllerPool.stop(sessionIndex, messageIndex);
   };
 
@@ -286,14 +418,20 @@ export function Chat(props: {
     }
   };
 
-  // for auto-scroll
-  const latestMessageRef = useRef<HTMLDivElement>(null);
-  const [autoScroll, setAutoScroll] = useState(true);
-
   const config = useChatStore((state) => state.config);
 
+  const context: RenderMessage[] = session.context.slice();
+
+  if (
+    context.length === 0 &&
+    session.messages.at(0)?.content !== BOT_HELLO.content
+  ) {
+    context.push(BOT_HELLO);
+  }
+
   // preview messages
-  const messages = (session.messages as RenderMessage[])
+  const messages = context
+    .concat(session.messages as RenderMessage[])
     .concat(
       isLoading
         ? [
@@ -305,40 +443,27 @@ export function Chat(props: {
             },
           ]
         : [],
-    ).concat(
-        userInput.length > 0 && config.sendPreviewBubble
-          ? [
-              {
-                role: "user",
-                content: userInput,
-                date: new Date().toLocaleString(),
-                preview: false,
-              },
-            ]
-          : [],
-    ); 
+    )
+    .concat(
+      userInput.length > 0 && config.sendPreviewBubble
+        ? [
+            {
+              role: "user",
+              content: userInput,
+              date: new Date().toLocaleString(),
+              preview: true,
+            },
+          ]
+        : [],
+    );
 
-  // auto scroll
-  useLayoutEffect(() => {
-    setTimeout(() => {
-      const dom = latestMessageRef.current;
-      const inputDom = inputRef.current;
+  const [showPromptModal, setShowPromptModal] = useState(false);
 
-      // only scroll when input overlaped message body
-      let shouldScroll = true;
-      if (dom && inputDom) {
-        const domRect = dom.getBoundingClientRect();
-        const inputRect = inputDom.getBoundingClientRect();
-        shouldScroll = domRect.top > inputRect.top;
-      }
-
-      if (dom && autoScroll && shouldScroll) {
-        dom.scrollIntoView({
-          block: "end",
-        });
-      }
-    }, 500);
-  });
+  // Auto focus
+  useEffect(() => {
+    if (props.sideBarShowing && isMobileScreen()) return;
+    inputRef.current?.focus();
+  }, []);
 
   return (
     <div className={styles.chat} key={session.id}>
@@ -379,7 +504,7 @@ export function Chat(props: {
               bordered
               title={Locale.Chat.Actions.CompressedHistory}
               onClick={() => {
-                showMemoryPrompt(session);
+                setShowPromptModal(true);
               }}
             />
           </div>
@@ -394,9 +519,20 @@ export function Chat(props: {
             />
           </div>
         </div>
+
+        <PromptToast
+          showToast={!hitBottom}
+          showModal={showPromptModal}
+          setShowModal={setShowPromptModal}
+        />
       </div>
 
-      <div className={styles["chat-body"]}>
+      <div
+        className={styles["chat-body"]}
+        ref={scrollRef}
+        onScroll={(e) => onChatBodyScroll(e.currentTarget)}
+        onTouchStart={() => inputRef.current?.blur()}
+      >
         {messages.map((message, i) => {
           const isUser = message.role === "user";
 
@@ -456,6 +592,7 @@ export function Chat(props: {
                         if (!isMobileScreen()) return;
                         setUserInput(message.content);
                       }}
+                      onMouseOver={() => inputRef.current?.blur()}
                     >
                       <Markdown content={message.content} />
                     </div>
@@ -472,9 +609,6 @@ export function Chat(props: {
             </div>
           );
         })}
-        <div ref={latestMessageRef} style={{ opacity: 0, height: "1px" }}>
-          -
-        </div>
       </div>
 
       <div className={styles["chat-input-panel"]}>
@@ -484,7 +618,7 @@ export function Chat(props: {
             ref={inputRef}
             className={styles["chat-input"]}
             placeholder={Locale.Chat.Input(submitKey)}
-            rows={4}
+            rows={2}
             onInput={(e) => onInput(e.currentTarget.value)}
             value={userInput}
             onKeyDown={onInputKeyDown}
@@ -493,165 +627,19 @@ export function Chat(props: {
               setAutoScroll(false);
               setTimeout(() => setPromptHints([]), 500);
             }}
+            onMouseOver={() => {
+              inputRef.current?.focus();
+            }}
             autoFocus={!props?.sideBarShowing}
           />
           <IconButton
             icon={<SendWhiteIcon />}
             text={Locale.Chat.Send}
-            className={styles["chat-input-send"] + " no-dark"}
+            className={styles["chat-input-send"]}
+            noDark
             onClick={onUserSubmit}
           />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function useSwitchTheme() {
-  const config = useChatStore((state) => state.config);
-
-  useEffect(() => {
-    document.body.classList.remove("light");
-    document.body.classList.remove("dark");
-
-    if (config.theme === "dark") {
-      document.body.classList.add("dark");
-    } else if (config.theme === "light") {
-      document.body.classList.add("light");
-    }
-
-    const themeColor = getComputedStyle(document.body)
-      .getPropertyValue("--theme-color")
-      .trim();
-    const metaDescription = document.querySelector('meta[name="theme-color"]');
-    metaDescription?.setAttribute("content", themeColor);
-  }, [config.theme]);
-}
-
-const useHasHydrated = () => {
-  const [hasHydrated, setHasHydrated] = useState<boolean>(false);
-
-  useEffect(() => {
-    setHasHydrated(true);
-  }, []);
-
-  return hasHydrated;
-};
-
-export function Home() {
-  const [createNewSession, currentIndex, removeSession] = useChatStore(
-    (state) => [
-      state.newSession,
-      state.currentSessionIndex,
-      state.removeSession,
-    ],
-  );
-  const loading = !useHasHydrated();
-  const [showSideBar, setShowSideBar] = useState(true);
-
-  // setting
-  const [openSettings, setOpenSettings] = useState(false);
-  const config = useChatStore((state) => state.config);
-
-  useSwitchTheme();
-
-  if (loading) {
-    return <Loading />;
-  }
-
-  return (
-    <div
-      className={`${
-        config.tightBorder && !isMobileScreen()
-          ? styles["tight-container"]
-          : styles.container
-      }`}
-    >
-      <div
-        className={styles.sidebar + ` ${showSideBar && styles["sidebar-show"]}`}
-      >
-        <div className={styles["sidebar-header"]}>
-          <div className={styles["sidebar-title"]}>ChatGPT Next</div>
-          <div className={styles["sidebar-sub-title"]}>
-            Build your own AI assistant.
-          </div>
-          <div className={styles["sidebar-logo"]}>
-            <ChatGptIcon />
-          </div>
-        </div>
-
-        <div
-          className={styles["sidebar-body"]}
-          onClick={() => {
-            setOpenSettings(false);
-            setShowSideBar(false);
-          }}
-        >
-          <ChatList />
-        </div>
-
-        <div className={styles["sidebar-tail"]}>
-          <div className={styles["sidebar-actions"]}>
-            <div className={styles["sidebar-action"] + " " + styles.mobile}>
-              <IconButton
-                icon={<CloseIcon />}
-                onClick={() => {
-                  if (confirm(Locale.Home.DeleteChat)) {
-                    removeSession(currentIndex);
-                  }
-                }}
-              />
-            </div>
-            <div className={styles["sidebar-action"]}>
-              <IconButton
-                icon={<SettingsIcon />}
-                onClick={() => {
-                  setOpenSettings(true);
-                  setShowSideBar(false);
-                }}
-                shadow
-              />
-            </div>
-            <div className={styles["sidebar-action"]}>
-              <a href={REPO_URL} target="_blank">
-                <IconButton icon={<GithubIcon />} shadow />
-              </a>
-            </div>
-            <div className={styles["sidebar-action"]}>
-              <a href={SPONSOR_URL} target="_blank">
-                <IconButton icon={<SponsorIcon />} />
-              </a>
-            </div>
-          </div>
-          <div>
-            <IconButton
-              icon={<AddIcon />}
-              text={Locale.Home.NewChat}
-              onClick={() => {
-                createNewSession();
-                setShowSideBar(false);
-              }}
-              shadow
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className={styles["window-content"]}>
-        {openSettings ? (
-          <Settings
-            closeSettings={() => {
-              setOpenSettings(false);
-              setShowSideBar(true);
-            }}
-          />
-        ) : (
-          <Chat
-            key="chat"
-            showSideBar={() => setShowSideBar(true)}
-            sideBarShowing={showSideBar}
-          />
-        )}
       </div>
     </div>
   );
