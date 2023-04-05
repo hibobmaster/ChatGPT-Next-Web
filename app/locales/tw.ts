@@ -4,7 +4,7 @@ import type { LocaleType } from "./index";
 const tw: LocaleType = {
   WIP: "該功能仍在開發中……",
   Error: {
-    Unauthorized: "目前您的狀態是未授權，請前往設定頁面填寫授權碼。",
+    Unauthorized: "目前您的狀態是未授權，請前往設定頁面輸入授權碼。",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 條對話`,
@@ -34,6 +34,8 @@ const tw: LocaleType = {
     Title: "匯出聊天記錄為 Markdown",
     Copy: "複製全部",
     Download: "下載檔案",
+    MessageFromYou: "來自你的訊息",
+    MessageFromChatGPT: "來自 ChatGPT 的訊息",
   },
   Memory: {
     Title: "上下文記憶 Prompt",
@@ -99,7 +101,7 @@ const tw: LocaleType = {
     },
     Token: {
       Title: "API Key",
-      SubTitle: "使用自己的 Key 可規避受控訪問限制",
+      SubTitle: "使用自己的 Key 可規避授權訪問限制",
       Placeholder: "OpenAI API Key",
     },
     Usage: {
@@ -112,9 +114,9 @@ const tw: LocaleType = {
       NoAccess: "輸入API Key查看餘額",
     },
     AccessCode: {
-      Title: "訪問碼",
-      SubTitle: "現在是受控訪問狀態",
-      Placeholder: "請輸入訪問碼",
+      Title: "授權碼",
+      SubTitle: "現在是未授權訪問狀態",
+      Placeholder: "請輸入授權碼",
     },
     Model: "模型 (model)",
     Temperature: {
