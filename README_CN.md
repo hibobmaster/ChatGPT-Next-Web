@@ -1,5 +1,5 @@
 <div align="center">
-<img src="./static/icon.svg" alt="预览"/>
+<img src="./docs/images/icon.svg" alt="预览"/>
 
 <h1 align="center">ChatGPT Next Web</h1>
 
@@ -90,7 +90,7 @@ OpenAI 代理接口协议，如果遇到 ssl 证书问题，请尝试通过此�
 
 ## 开发
 
-> 强烈不建议在本地进行开发或者部署，由于一些技术原因，导致很难在本地配置好 OpenAI API 代理，除非你能保证可以直。连 OpenAI 服务器
+> 强烈不建议在本地进行开发或者部署，由于一些技术原因，很难在本地配置好 OpenAI API 代理，除非你能保证可以直连 OpenAI 服务器。
 
 点击下方按钮，开始二次开发：
 
@@ -123,13 +123,6 @@ docker run -d -p 3000:3000 -e OPENAI_API_KEY="" -e CODE="" yidadaa/chatgpt-next-
 ```shell
 bash <(curl -s https://raw.githubusercontent.com/Yidadaa/ChatGPT-Next-Web/main/scripts/setup.sh)
 ```
-
-
-## 截图 Screenshots
-
-![设置](./static/settings.png)
-
-![更多展示](./static/more.png)
 
 
 ## 鸣谢

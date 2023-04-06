@@ -20,7 +20,6 @@ import CloseIcon from "../icons/close.svg";
 import { useChatStore } from "../store";
 import { isMobileScreen } from "../utils";
 import Locale from "../locales";
-import { ChatList } from "./chat-list";
 import { Chat } from "./chat";
 
 import dynamic from "next/dynamic";
@@ -38,6 +37,10 @@ export function Loading(props: { noLogo?: boolean }) {
 }
 
 const Settings = dynamic(async () => (await import("./settings")).Settings, {
+  loading: () => <Loading noLogo />,
+});
+
+const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => <Loading noLogo />,
 });
 
