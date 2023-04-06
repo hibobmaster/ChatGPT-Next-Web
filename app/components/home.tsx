@@ -122,6 +122,8 @@ function _Home() {
             Build your own AI assistant.
             <br />
             如遇4097问题，请尝试清空当前网页数据或使用浏览器隐私模式
+            <br />
+            反馈: <a href="mailto:bobmaster@hibobmaster.com">邮件联系📧</a>
           </div>
           <div className={styles["sidebar-logo"]}>
             <ChatGptIcon />
