@@ -7,3 +7,4 @@ export const FETCH_COMMIT_URL = `https://api.github.com/repos/${OWNER}/${REPO}/c
 export const FETCH_TAG_URL = `https://api.github.com/repos/${OWNER}/${REPO}/tags?per_page=1`;
 export const SPONSOR_URL =
   "https://blog.hibobmaster.com/wp-content/uploads/2021/03/donation.png";
+export const RUNTIME_CONFIG_DOM = "danger-runtime-config";
