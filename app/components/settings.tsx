@@ -27,7 +27,7 @@ import {
 import { Avatar } from "./chat";
 
 import Locale, { AllLangs, changeLang, getLang } from "../locales";
-import { copyToClipboard, getEmojiUrl } from "../utils";
+import { copyToClipboard } from "../utils";
 import Link from "next/link";
 import { UPDATE_URL } from "../constant";
 import { Prompt, SearchService, usePromptStore } from "../store/prompt";
