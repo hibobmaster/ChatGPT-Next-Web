@@ -10,6 +10,7 @@ import CopyIcon from "../icons/copy.svg";
 import DownloadIcon from "../icons/download.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import BotIcon from "../icons/bot.svg";
+import BlackBotIcon from "../icons/black-bot.svg";
 import AddIcon from "../icons/add.svg";
 import DeleteIcon from "../icons/delete.svg";
 import MaxIcon from "../icons/max.svg";
@@ -30,14 +31,16 @@ import {
   createMessage,
   useAccessStore,
   Theme,
+  ModelType,
+  useAppConfig,
 } from "../store";
 
 import {
   copyToClipboard,
   downloadAs,
-  isMobileScreen,
   selectOrCopy,
   autoGrowTextArea,
+  useMobileScreen,
 } from "../utils";
 
 import dynamic from "next/dynamic";
@@ -53,6 +56,8 @@ import chatStyle from "./chat.module.scss";
 import { Input, Modal, showModal } from "./ui-lib";
 
 import { getEmojiUrl } from "@/config";
+import { useNavigate } from "react-router-dom";
+import { Path } from "../constant";
 
 const Markdown = dynamic(
   async () => memo((await import("./markdown")).Markdown),
@@ -65,13 +70,17 @@ const Emoji = dynamic(async () => (await import("emoji-picker-react")).Emoji, {
   loading: () => <LoadingIcon />,
 });
 
-export function Avatar(props: { role: Message["role"] }) {
-  const config = useChatStore((state) => state.config);
+export function Avatar(props: { role: Message["role"]; model?: ModelType }) {
+  const config = useAppConfig();
 
   if (props.role !== "user") {
     return (
       <div className="no-dark">
-        <BotIcon className={styles["user-avtar"]} />
+        {props.model?.startsWith("gpt-4") ? (
+          <BlackBotIcon className={styles["user-avtar"]} />
+        ) : (
+          <BotIcon className={styles["user-avtar"]} />
+        )}
       </div>
     );
   }
@@ -284,7 +293,7 @@ function PromptToast(props: {
 }
 
 function useSubmitHandler() {
-  const config = useChatStore((state) => state.config);
+  const config = useAppConfig();
   const submitKey = config.submitKey;
 
   const shouldSubmit = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -360,16 +369,16 @@ export function ChatActions(props: {
   scrollToBottom: () => void;
   hitBottom: boolean;
 }) {
-  const chatStore = useChatStore();
+  const config = useAppConfig();
 
   // switch themes
-  const theme = chatStore.config.theme;
+  const theme = config.theme;
   function nextTheme() {
     const themes = [Theme.Auto, Theme.Light, Theme.Dark];
     const themeIndex = themes.indexOf(theme);
     const nextIndex = (themeIndex + 1) % themes.length;
     const nextTheme = themes[nextIndex];
-    chatStore.updateConfig((config) => (config.theme = nextTheme));
+    config.update((config) => (config.theme = nextTheme));
   }
 
   // stop all responses
@@ -419,10 +428,7 @@ export function ChatActions(props: {
   );
 }
 
-export function Chat(props: {
-  showSideBar?: () => void;
-  sideBarShowing?: boolean;
-}) {
+export function Chat() {
   type RenderMessage = Message & { preview?: boolean };
 
   const chatStore = useChatStore();
@@ -430,7 +436,8 @@ export function Chat(props: {
     state.currentSession(),
     state.currentSessionIndex,
   ]);
-  const fontSize = useChatStore((state) => state.config.fontSize);
+  const config = useAppConfig();
+  const fontSize = config.fontSize;
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState("");
@@ -439,6 +446,8 @@ export function Chat(props: {
   const { submitKey, shouldSubmit } = useSubmitHandler();
   const { scrollRef, setAutoScroll, scrollToBottom } = useScrollToBottom();
   const [hitBottom, setHitBottom] = useState(false);
+  const isMobileScreen = useMobileScreen();
+  const navigate = useNavigate();
 
   const onChatBodyScroll = (e: HTMLElement) => {
     const isTouchBottom = e.scrollTop + e.clientHeight >= e.scrollHeight - 20;
@@ -469,7 +478,7 @@ export function Chat(props: {
       const rows = inputRef.current ? autoGrowTextArea(inputRef.current) : 1;
       const inputRows = Math.min(
         5,
-        Math.max(2 + Number(!isMobileScreen()), rows),
+        Math.max(2 + Number(!isMobileScreen), rows),
       );
       setInputRows(inputRows);
     },
@@ -492,7 +501,7 @@ export function Chat(props: {
     // clear search results
     if (n === 0) {
       setPromptHints([]);
-    } else if (!chatStore.config.disablePromptHint && n < SEARCH_TEXT_LIMIT) {
+    } else if (!config.disablePromptHint && n < SEARCH_TEXT_LIMIT) {
       // check if need to trigger auto completion
       if (text.startsWith("/")) {
         let searchText = text.slice(1);
@@ -509,7 +518,7 @@ export function Chat(props: {
     setBeforeInput(userInput);
     setUserInput("");
     setPromptHints([]);
-    if (!isMobileScreen()) inputRef.current?.focus();
+    if (!isMobileScreen) inputRef.current?.focus();
     setAutoScroll(true);
   };
 
@@ -543,7 +552,7 @@ export function Chat(props: {
     }
   };
 
-  const findLastUesrIndex = (messageId: number) => {
+  const findLastUserIndex = (messageId: number) => {
     // find last user input message and resend
     let lastUserMessageIndex: number | null = null;
     for (let i = 0; i < session.messages.length; i += 1) {
@@ -566,14 +575,14 @@ export function Chat(props: {
   };
 
   const onDelete = (botMessageId: number) => {
-    const userIndex = findLastUesrIndex(botMessageId);
+    const userIndex = findLastUserIndex(botMessageId);
     if (userIndex === null) return;
     deleteMessage(userIndex);
   };
 
   const onResend = (botMessageId: number) => {
     // find last user input message and resend
-    const userIndex = findLastUesrIndex(botMessageId);
+    const userIndex = findLastUserIndex(botMessageId);
     if (userIndex === null) return;
 
     setIsLoading(true);
@@ -582,8 +591,6 @@ export function Chat(props: {
     chatStore.onUserInput(content).then(() => setIsLoading(false));
     inputRef.current?.focus();
   };
-
-  const config = useChatStore((state) => state.config);
 
   const context: RenderMessage[] = session.context.slice();
 
@@ -641,7 +648,7 @@ export function Chat(props: {
 
   // Auto focus
   useEffect(() => {
-    if (props.sideBarShowing && isMobileScreen()) return;
+    if (isMobileScreen) return;
     inputRef.current?.focus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -666,7 +673,7 @@ export function Chat(props: {
               icon={<ReturnIcon />}
               bordered
               title={Locale.Chat.Actions.ChatList}
-              onClick={props?.showSideBar}
+              onClick={() => navigate(Path.Home)}
             />
           </div>
           <div className={styles["window-action-button"]}>
@@ -689,13 +696,13 @@ export function Chat(props: {
               }}
             />
           </div>
-          {!isMobileScreen() && (
+          {!isMobileScreen && (
             <div className={styles["window-action-button"]}>
               <IconButton
-                icon={chatStore.config.tightBorder ? <MinIcon /> : <MaxIcon />}
+                icon={config.tightBorder ? <MinIcon /> : <MaxIcon />}
                 bordered
                 onClick={() => {
-                  chatStore.updateConfig(
+                  config.update(
                     (config) => (config.tightBorder = !config.tightBorder),
                   );
                 }}
@@ -724,6 +731,11 @@ export function Chat(props: {
       >
         {messages.map((message, i) => {
           const isUser = message.role === "user";
+          const showActions =
+            !isUser &&
+            i > 0 &&
+            !(message.preview || message.content.length === 0);
+          const showTyping = message.preview || message.streaming;
 
           return (
             <div
@@ -734,49 +746,48 @@ export function Chat(props: {
             >
               <div className={styles["chat-message-container"]}>
                 <div className={styles["chat-message-avatar"]}>
-                  <Avatar role={message.role} />
+                  <Avatar role={message.role} model={message.model} />
                 </div>
-                {(message.preview || message.streaming) && (
+                {showTyping && (
                   <div className={styles["chat-message-status"]}>
                     {Locale.Chat.Typing}
                   </div>
                 )}
                 <div className={styles["chat-message-item"]}>
-                  {!isUser &&
-                    !(message.preview || message.content.length === 0) && (
-                      <div className={styles["chat-message-top-actions"]}>
-                        {message.streaming ? (
-                          <div
-                            className={styles["chat-message-top-action"]}
-                            onClick={() => onUserStop(message.id ?? i)}
-                          >
-                            {Locale.Chat.Actions.Stop}
-                          </div>
-                        ) : (
-                          <>
-                            <div
-                              className={styles["chat-message-top-action"]}
-                              onClick={() => onDelete(message.id ?? i)}
-                            >
-                              {Locale.Chat.Actions.Delete}
-                            </div>
-                            <div
-                              className={styles["chat-message-top-action"]}
-                              onClick={() => onResend(message.id ?? i)}
-                            >
-                              {Locale.Chat.Actions.Retry}
-                            </div>
-                          </>
-                        )}
-
+                  {showActions && (
+                    <div className={styles["chat-message-top-actions"]}>
+                      {message.streaming ? (
                         <div
                           className={styles["chat-message-top-action"]}
-                          onClick={() => copyToClipboard(message.content)}
+                          onClick={() => onUserStop(message.id ?? i)}
                         >
-                          {Locale.Chat.Actions.Copy}
+                          {Locale.Chat.Actions.Stop}
                         </div>
+                      ) : (
+                        <>
+                          <div
+                            className={styles["chat-message-top-action"]}
+                            onClick={() => onDelete(message.id ?? i)}
+                          >
+                            {Locale.Chat.Actions.Delete}
+                          </div>
+                          <div
+                            className={styles["chat-message-top-action"]}
+                            onClick={() => onResend(message.id ?? i)}
+                          >
+                            {Locale.Chat.Actions.Retry}
+                          </div>
+                        </>
+                      )}
+
+                      <div
+                        className={styles["chat-message-top-action"]}
+                        onClick={() => copyToClipboard(message.content)}
+                      >
+                        {Locale.Chat.Actions.Copy}
                       </div>
-                    )}
+                    </div>
+                  )}
                   <Markdown
                     content={message.content}
                     loading={
@@ -785,7 +796,7 @@ export function Chat(props: {
                     }
                     onContextMenu={(e) => onRightClick(e, message)}
                     onDoubleClickCapture={() => {
-                      if (!isMobileScreen()) return;
+                      if (!isMobileScreen) return;
                       setUserInput(message.content);
                     }}
                     fontSize={fontSize}
@@ -826,7 +837,7 @@ export function Chat(props: {
               setAutoScroll(false);
               setTimeout(() => setPromptHints([]), 500);
             }}
-            autoFocus={!props?.sideBarShowing}
+            autoFocus
             rows={inputRows}
           />
           <IconButton
