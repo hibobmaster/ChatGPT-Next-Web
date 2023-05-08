@@ -45,6 +45,7 @@ const makeRequestParam = (
 
 function getHeaders() {
   const accessStore = useAccessStore.getState();
+
   let headers: Record<string, string> = {};
 
   const makeBearer = (token: string) => `Bearer ${token.trim()}`;

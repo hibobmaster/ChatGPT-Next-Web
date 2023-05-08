@@ -98,7 +98,13 @@ export function SideBar(props: { className?: string }) {
       <div className={styles["sidebar-header"]}>
         <div className={styles["sidebar-title"]}>ChatGPT Next</div>
         <div className={styles["sidebar-sub-title"]}>
-          Build your own AI assistant.
+          你的智能AI助手
+          <br />
+          反馈: <a href="mailto:bobmaster@hibobmaster.com">邮件联系📧</a> <br />
+          在线吹水:{" "}
+          <a href="https://chat.quanquan.space/signup_user_complete/?id=zhqfc9nadpdgfqm9msetg4xb9a">
+            点击加入🏂
+          </a>
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
           <ChatGptIcon />
