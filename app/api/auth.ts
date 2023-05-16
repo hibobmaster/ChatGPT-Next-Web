@@ -40,31 +40,29 @@ export function auth(req: NextRequest) {
   // console.log("[User IP] ", getIP(req));
   // console.log("[Time] ", new Date().toLocaleString());
 
-  // if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !token) {
-  //   return {
-  //     error: true,
-  //     needAccessCode: true,
-  //     msg: "Please go settings page and fill your access code.",
-  //   };
-  // }
-
-  // if user does not provide an api key, inject system api key
-  // if (!token) {
-  const apiKey = serverConfig.apiKey;
-  if (apiKey) {
-    console.log("[Auth] use system api key");
-    req.headers.set("Authorization", `Bearer ${apiKey}`);
-  } else {
-    console.log("[Auth] admin did not provide an api key");
+  if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !token) {
     return {
       error: true,
-      msg: "Empty Api Key",
+      msg: !accessCode ? "empty access code" : "wrong access code",
     };
   }
-  // }
-  // else {
-  //   console.log("[Auth] use user api key");
-  // }
+
+  // if user does not provide an api key, inject system api key
+  if (!token) {
+    const apiKey = serverConfig.apiKey;
+    if (apiKey) {
+      console.log("[Auth] use system api key");
+      req.headers.set("Authorization", `Bearer ${apiKey}`);
+    } else {
+      console.log("[Auth] admin did not provide an api key");
+      return {
+        error: true,
+        msg: "admin did not provide an api key",
+      };
+    }
+  } else {
+    console.log("[Auth] use user api key");
+  }
 
   return {
     error: false,
