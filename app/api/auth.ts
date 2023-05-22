@@ -33,35 +33,36 @@ export function auth(req: NextRequest) {
   // const hashedCode = md5.hash(accessCode ?? "").trim();
 
   const serverConfig = getServerSideConfig();
-  console.log("[Auth] allowed hashed codes: ", [...serverConfig.codes]);
-  console.log("[Auth] got access code:", accessCode);
-  console.log("[Auth] hashed access code:", hashedCode);
-  console.log("[User IP] ", getIP(req));
-  console.log("[Time] ", new Date().toLocaleString());
+  // console.log("[Auth] allowed hashed codes: ", [...serverConfig.codes]);
+  // console.log("[Auth] got access code:", accessCode);
+  // console.log("[Auth] hashed access code:", hashedCode);
+  // console.log("[User IP] ", getIP(req));
+  // console.log("[Time] ", new Date().toLocaleString());
 
-  if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !token) {
-    return {
-      error: true,
-      msg: !accessCode ? "empty access code" : "wrong access code",
-    };
-  }
+  // if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !token) {
+  //   return {
+  //     error: true,
+  //     msg: !accessCode ? "empty access code" : "wrong access code",
+  //   };
+  // }
 
   // if user does not provide an api key, inject system api key
-  if (!token) {
-    const apiKey = serverConfig.apiKey;
-    if (apiKey) {
-      console.log("[Auth] use system api key");
-      req.headers.set("Authorization", `Bearer ${apiKey}`);
-    } else {
-      console.log("[Auth] admin did not provide an api key");
-      return {
-        error: true,
-        msg: "admin did not provide an api key",
-      };
-    }
-  } else {
-    console.log("[Auth] use user api key");
-  }
+  // if (!token) {
+  const apiKey = serverConfig.apiKey;
+  //   if (apiKey) {
+  //     console.log("[Auth] use system api key");
+  //     req.headers.set("Authorization", `Bearer ${apiKey}`);
+  req.headers.set("Authorization", `Bearer ${apiKey}`);
+  //   } else {
+  //     console.log("[Auth] admin did not provide an api key");
+  //     return {
+  //       error: true,
+  //       msg: "admin did not provide an api key",
+  //     };
+  //   }
+  // } else {
+  //   console.log("[Auth] use user api key");
+  // }
 
   return {
     error: false,
