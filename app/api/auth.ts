@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { getServerSideConfig } from "../config/server";
 import md5 from "spark-md5";
 import { ACCESS_CODE_PREFIX } from "../constant";
+import { OPENAI_URL } from "./common";
 
 function getIP(req: NextRequest) {
   let ip = req.ip ?? req.headers.get("x-real-ip");
@@ -47,22 +48,17 @@ export function auth(req: NextRequest) {
   // }
 
   // if user does not provide an api key, inject system api key
-  // if (!token) {
-  const apiKey = serverConfig.apiKey;
-  //   if (apiKey) {
-  //     console.log("[Auth] use system api key");
-  //     req.headers.set("Authorization", `Bearer ${apiKey}`);
-  req.headers.set("Authorization", `Bearer ${apiKey}`);
-  //   } else {
-  //     console.log("[Auth] admin did not provide an api key");
-  //     return {
-  //       error: true,
-  //       msg: "admin did not provide an api key",
-  //     };
-  //   }
-  // } else {
-  //   console.log("[Auth] use user api key");
-  // }
+  if (!token) {
+    const apiKey = serverConfig.apiKey;
+    if (apiKey) {
+      console.log("[Auth] use system api key");
+      req.headers.set("Authorization", `Bearer ${apiKey}`);
+    } else {
+      console.log("[Auth] admin did not provide an api key");
+    }
+  } else {
+    console.log("[Auth] use user api key");
+  }
 
   return {
     error: false,
