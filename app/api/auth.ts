@@ -48,17 +48,18 @@ export function auth(req: NextRequest) {
   // }
 
   // if user does not provide an api key, inject system api key
-  if (!token) {
-    const apiKey = serverConfig.apiKey;
-    if (apiKey) {
-      console.log("[Auth] use system api key");
-      req.headers.set("Authorization", `Bearer ${apiKey}`);
-    } else {
-      console.log("[Auth] admin did not provide an api key");
-    }
-  } else {
-    console.log("[Auth] use user api key");
-  }
+  // if (!token) {
+  const apiKey = serverConfig.apiKey;
+  //   if (apiKey) {
+  //     console.log("[Auth] use system api key");
+  //     req.headers.set("Authorization", `Bearer ${apiKey}`);
+  req.headers.set("Authorization", `Bearer ${apiKey}`);
+  //   } else {
+  //     console.log("[Auth] admin did not provide an api key");
+  //   }
+  // } else {
+  //   console.log("[Auth] use user api key");
+  // }
 
   return {
     error: false,
