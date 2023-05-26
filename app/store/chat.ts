@@ -257,7 +257,12 @@ export const useChatStore = create<ChatStore>()(
         });
 
         // get recent messages
-        const systemMessages = [systemInfo];
+        const systemMessages = [];
+        // if user define a mask with context prompts, wont send system info
+        if (session.mask.context.length === 0) {
+          systemMessages.push(systemInfo);
+        }
+
         const recentMessages = get().getMessagesWithMemory();
         const sendMessages = systemMessages.concat(
           recentMessages.concat(userMessage),
