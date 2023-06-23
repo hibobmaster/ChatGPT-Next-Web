@@ -125,11 +125,17 @@ export function SideBar(props: { className?: string }) {
         <div className={styles["sidebar-sub-title"]}>
           你的智能AI助手
           <br />
-          反馈: <a href="mailto:bobmaster@hibobmaster.com">邮件联系📧</a> <br />
-          在线吹水:{" "}
+          反馈:&nbsp;<a href="mailto:bobmaster@hibobmaster.com">
+            邮件联系📧
+          </a>{" "}
+          <br />
+          在线吹水:&nbsp;
           <a href="https://chat.quanquan.space/signup_user_complete/?id=zhqfc9nadpdgfqm9msetg4xb9a">
             点击加入🏂
-          </a>
+          </a>{" "}
+          <br />
+          最新更新: 升级至<b>gpt-3.5-turbo-16k</b>
+          模型，支持更长的上下文关联，更长的输入长度，如缓存未刷新请手动在设置里设置最新模型
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
           <ChatGptIcon />
