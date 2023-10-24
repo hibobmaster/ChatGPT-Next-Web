@@ -150,6 +150,8 @@ export function SideBar(props: { className?: string }) {
         <div className={styles["sidebar-sub-title"]}>
           你的智能AI助手
           <br />
+          如果提示需要认证，且刷新网页无效则清除本网页缓存新建一个对话试试或使用隐私(无痕)模式打开
+          <br />
           反馈
           <svg
             width="14"
