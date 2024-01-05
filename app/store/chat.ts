@@ -10,7 +10,7 @@ import {
   KnowledgeCutOffDate,
   ModelProvider,
   StoreKey,
-  SUMMARIZE_MODEL,
+  DEFAULT_SUMMARIZE_MODEL,
 } from "../constant";
 import { ClientApi, RequestMessage } from "../client/api";
 import { ChatControllerPool } from "../client/controller";
@@ -83,7 +83,9 @@ function createEmptySession(): ChatSession {
 
 function getSummarizeModel(currentModel: string) {
   // if it is using gpt-* models, force to use 3.5 to summarize
-  return currentModel.startsWith("gpt") ? SUMMARIZE_MODEL : currentModel;
+  return currentModel.startsWith("gpt")
+    ? DEFAULT_SUMMARIZE_MODEL
+    : currentModel;
 }
 
 function countMessages(msgs: ChatMessage[]) {

@@ -249,5 +249,23 @@ export const DEFAULT_MODELS = [
   },
 ] as const;
 
+type ModelType = (typeof DEFAULT_MODELS)[number]["name"];
+
+const isValidModel = (model: string): model is ModelType => {
+  return DEFAULT_MODELS.some((m) => m.name === model);
+};
+
+export const DEFAULT_CHAT_MODEL = isValidModel(
+  process.env.NEXT_PUBLIC_DEFAULT_CHAT_MODEL || "",
+)
+  ? (process.env.NEXT_PUBLIC_DEFAULT_CHAT_MODEL as ModelType)
+  : "gpt-4";
+
+export const DEFAULT_SUMMARIZE_MODEL = isValidModel(
+  process.env.NEXT_PUBLIC_DEFAULT_SUMMARIZE_MODEL || "",
+)
+  ? (process.env.NEXT_PUBLIC_DEFAULT_SUMMARIZE_MODEL as ModelType)
+  : "gpt-4";
+
 export const CHAT_PAGE_SIZE = 15;
 export const MAX_RENDER_MSG_COUNT = 45;
