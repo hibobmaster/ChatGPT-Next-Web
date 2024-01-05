@@ -259,13 +259,13 @@ export const DEFAULT_CHAT_MODEL = isValidModel(
   process.env.NEXT_PUBLIC_DEFAULT_CHAT_MODEL || "",
 )
   ? (process.env.NEXT_PUBLIC_DEFAULT_CHAT_MODEL as ModelType)
-  : "gpt-3.5-turbo";
+  : "gpt-4";
 
 export const DEFAULT_SUMMARIZE_MODEL = isValidModel(
   process.env.NEXT_PUBLIC_DEFAULT_SUMMARIZE_MODEL || "",
 )
   ? (process.env.NEXT_PUBLIC_DEFAULT_SUMMARIZE_MODEL as ModelType)
-  : "gpt-3.5-turbo";
+  : "gpt-4";
 
 export const CHAT_PAGE_SIZE = 15;
 export const MAX_RENDER_MSG_COUNT = 45;
