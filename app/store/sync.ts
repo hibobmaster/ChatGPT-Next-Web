@@ -48,7 +48,7 @@ const DEFAULT_SYNC_STATE = {
 export const useSyncStore = createPersistStore(
   DEFAULT_SYNC_STATE,
   (set, get) => ({
-    coundSync() {
+    cloudSync() {
       const config = get()[get().provider];
       return Object.values(config).every((c) => c.toString().length > 0);
     },
@@ -118,13 +118,22 @@ export const useSyncStore = createPersistStore(
   }),
   {
     name: StoreKey.Sync,
-    version: 1.1,
+    version: 1.2,
 
     migrate(persistedState, version) {
       const newState = persistedState as typeof DEFAULT_SYNC_STATE;
 
       if (version < 1.1) {
         newState.upstash.username = STORAGE_KEY;
+      }
+
+      if (version < 1.2) {
+        if (
+          (persistedState as typeof DEFAULT_SYNC_STATE).proxyUrl ===
+          "/api/cors/"
+        ) {
+          newState.proxyUrl = "";
+        }
       }
 
       return newState as any;
