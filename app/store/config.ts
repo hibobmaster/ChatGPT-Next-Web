@@ -50,7 +50,7 @@ export const DEFAULT_CONFIG = {
     model: DEFAULT_CHAT_MODEL as ModelType,
     temperature: 0.5,
     top_p: 1,
-    max_tokens: 4000,
+    max_tokens: 8000,
     presence_penalty: 0,
     frequency_penalty: 0,
     sendMemory: true,

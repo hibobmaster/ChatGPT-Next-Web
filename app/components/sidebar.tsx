@@ -162,6 +162,8 @@ export function SideBar(props: { className?: string }) {
           <br />
           如果提示需要认证，请尝试Ctrl+F5强制刷新缓存再点击网址旁边的刷新按钮刷新一下页面然后新建一个对话试试或使用浏览器隐私(无痕)模式打开
           <br />
+          ChatGPT暂时不可用，请使用Gemini-Pro模型
+          <br />
           反馈
           <svg
             width="14"
