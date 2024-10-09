@@ -4,9 +4,7 @@ import "./styles/markdown.scss";
 import "./styles/highlight.scss";
 import { getClientConfig } from "./config/client";
 import type { Metadata, Viewport } from "next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getServerSideConfig } from "./config/server";
-import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 const serverConfig = getServerSideConfig();
 
 export const metadata: Metadata = {
@@ -55,7 +53,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
-        {serverConfig?.isVercel && (
+        {/* {serverConfig?.isVercel && (
           <>
             <SpeedInsights />
           </>
@@ -69,7 +67,7 @@ export default function RootLayout({
           <>
             <GoogleAnalytics gaId={serverConfig.gaId} />
           </>
-        )}
+        )} */}
       </body>
     </html>
   );
