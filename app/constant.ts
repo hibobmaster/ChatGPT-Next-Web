@@ -225,7 +225,7 @@ export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lan
 // Latex block: $$e=mc^2$$
 // `;
 export const DEFAULT_SYSTEM_TEMPLATE = `
-You are ChatGPT, a large language model trained by {{ServiceProvider}}.
+You are a helpful assistant.
 Knowledge cutoff: {{cutoff}}
 Current model: {{model}}
 Current time: {{time}}
@@ -233,8 +233,8 @@ Latex inline: \\(x^2\\)
 Latex block: $$e=mc^2$$
 `;
 
-export const SUMMARIZE_MODEL = "gpt-4o-mini";
-export const GEMINI_SUMMARIZE_MODEL = "gemini-pro";
+export const SUMMARIZE_MODEL = "gemini-2.0-flash-exp";
+export const GEMINI_SUMMARIZE_MODEL = "gemini-2.0-flash-exp";
 
 export const KnowledgeCutOffDate: Record<string, string> = {
   default: "2021-09",
@@ -254,6 +254,7 @@ export const KnowledgeCutOffDate: Record<string, string> = {
   // it's now easier to add "KnowledgeCutOffDate" instead of stupid hardcoding it, as was done previously.
   "gemini-pro": "2023-12",
   "gemini-pro-vision": "2023-12",
+  "gemini-2.0-flash-exp": "2024-8",
 };
 
 export const DEFAULT_TTS_ENGINE = "OpenAI-TTS";
@@ -298,6 +299,7 @@ const googleModels = [
   "gemini-1.0-pro",
   "gemini-1.5-pro-latest",
   "gemini-1.5-flash-latest",
+  "gemini-2.0-flash-exp",
   "gemini-pro-vision",
 ];
 
@@ -484,16 +486,14 @@ const isValidModel = (model: string): model is ModelType => {
   return DEFAULT_MODELS.some((m) => m.name === model);
 };
 
-export const DEFAULT_CHAT_MODEL = isValidModel(
-  process.env.NEXT_PUBLIC_DEFAULT_CHAT_MODEL || "",
-)
-  ? (process.env.NEXT_PUBLIC_DEFAULT_CHAT_MODEL as ModelType)
+export const DEFAULT_CHAT_MODEL = isValidModel(process.env.DEFAULT_MODEL || "")
+  ? (process.env.DEFAULT_MODEL as ModelType)
   : "gpt-4";
 
 export const DEFAULT_SUMMARIZE_MODEL = isValidModel(
-  process.env.NEXT_PUBLIC_DEFAULT_SUMMARIZE_MODEL || "",
+  process.env.DEFAULT_MODEL || "",
 )
-  ? (process.env.NEXT_PUBLIC_DEFAULT_SUMMARIZE_MODEL as ModelType)
+  ? (process.env.DEFAULT_MODEL as ModelType)
   : "gpt-4";
 
 export const CHAT_PAGE_SIZE = 15;
@@ -512,7 +512,7 @@ export const internalAllowedWebDavEndpoints = [
   "https://app.koofr.net/dav/Koofr",
 ];
 
-export const DEFAULT_GA_ID = "G-89WN60ZK2E";
+export const DEFAULT_GA_ID = "";
 export const PLUGINS = [
   { name: "Plugins", path: Path.Plugins },
   { name: "Stable Diffusion", path: Path.Sd },
