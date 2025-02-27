@@ -251,7 +251,7 @@ export function SideBar(props: { className?: string }) {
     >
       <SideBarHeader
         title="NextChat"
-        subTitle="Build your own AI assistant."
+        subTitle="新增grok模型，gemini/grok部分模型支持图片上传"
         logo={<ChatGptIcon />}
         shouldNarrow={shouldNarrow}
       >

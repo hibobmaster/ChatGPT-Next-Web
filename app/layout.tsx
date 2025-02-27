@@ -48,6 +48,11 @@ export default function RootLayout({
           crossOrigin="use-credentials"
         ></link>
         <script src="/serviceWorkerRegister.js" defer></script>
+        <script
+          async
+          src="https://analytics.qqs.tw/script.js"
+          data-website-id="6ac8e216-95c3-495d-8974-ad467b2c7fed"
+        ></script>
       </head>
       <body>
         {children}
