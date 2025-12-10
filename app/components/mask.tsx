@@ -76,7 +76,7 @@ export function MaskAvatar(props: { avatar: string; model?: ModelType }) {
 export function MaskConfig(props: {
   mask: Mask;
   updateMask: Updater<Mask>;
-  extraListItems?: JSX.Element;
+  extraListItems?: React.ReactNode;
   readonly?: boolean;
   shouldSyncFromGlobal?: boolean;
 }) {
@@ -251,7 +251,7 @@ export function MaskConfig(props: {
           modelConfig={{ ...props.mask.modelConfig }}
           updateConfig={updateConfig}
         />
-        {props.extraListItems}
+        {props.extraListItems as any}
       </List>
     </>
   );
@@ -292,7 +292,6 @@ function ContextPromptItem(props: {
       )}
       <Input
         value={getMessageTextContent(props.prompt)}
-        type="text"
         className={chatStyle["context-content"]}
         rows={focusingInput ? 5 : 1}
         onFocus={() => setFocusingInput(true)}
@@ -493,7 +492,7 @@ export function MaskPage() {
         if (importMasks.name) {
           maskStore.create(importMasks);
         }
-      } catch {}
+      } catch { }
     });
   };
 
@@ -590,9 +589,8 @@ export function MaskPage() {
                   <div className={styles["mask-title"]}>
                     <div className={styles["mask-name"]}>{m.name}</div>
                     <div className={clsx(styles["mask-info"], "one-line")}>
-                      {`${Locale.Mask.Item.Info(m.context.length)} / ${
-                        ALL_LANG_OPTIONS[m.lang]
-                      } / ${m.modelConfig.model}`}
+                      {`${Locale.Mask.Item.Info(m.context.length)} / ${ALL_LANG_OPTIONS[m.lang]
+                        } / ${m.modelConfig.model}`}
                     </div>
                   </div>
                 </div>

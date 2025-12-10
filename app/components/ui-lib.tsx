@@ -27,8 +27,8 @@ import { Avatar } from "./emoji";
 import clsx from "clsx";
 
 export function Popover(props: {
-  children: JSX.Element;
-  content: JSX.Element;
+  children: React.ReactNode;
+  content: React.ReactNode;
   open?: boolean;
   onClose?: () => void;
 }) {
@@ -45,7 +45,7 @@ export function Popover(props: {
   );
 }
 
-export function Card(props: { children: JSX.Element[]; className?: string }) {
+export function Card(props: { children: React.ReactNode[]; className?: string }) {
   return (
     <div className={clsx(styles.card, props.className)}>{props.children}</div>
   );
@@ -53,9 +53,9 @@ export function Card(props: { children: JSX.Element[]; className?: string }) {
 
 export function ListItem(props: {
   title?: string;
-  subTitle?: string | JSX.Element;
-  children?: JSX.Element | JSX.Element[];
-  icon?: JSX.Element;
+  subTitle?: string | React.ReactNode;
+  children?: React.ReactNode | React.ReactNode[];
+  icon?: React.ReactNode;
   className?: string;
   onClick?: (e: MouseEvent) => void;
   vertical?: boolean;
@@ -255,7 +255,8 @@ export function showToast(
   root.render(<Toast content={content} action={action} onClose={close} />);
 }
 
-export type InputProps = React.HTMLProps<HTMLTextAreaElement> & {
+export type InputProps = Omit<React.ComponentProps<"textarea">, "ref"> & {
+  ref?: React.Ref<HTMLTextAreaElement>;
   autoHeight?: boolean;
   rows?: number;
 };
@@ -264,13 +265,17 @@ export function Input(props: InputProps) {
   return (
     <textarea
       {...props}
+      ref={props.ref as any}
       className={clsx(styles["input"], props.className)}
     ></textarea>
   );
 }
 
 export function PasswordInput(
-  props: HTMLProps<HTMLInputElement> & { aria?: string },
+  props: Omit<React.ComponentProps<"input">, "ref"> & {
+    ref?: React.Ref<HTMLInputElement>;
+    aria?: string;
+  },
 ) {
   const [visible, setVisible] = useState(false);
   function changeVisibility() {
@@ -287,6 +292,7 @@ export function PasswordInput(
       />
       <input
         {...props}
+        ref={props.ref as any}
         type={visible ? "text" : "password"}
         className={"password-input"}
       />
@@ -295,12 +301,10 @@ export function PasswordInput(
 }
 
 export function Select(
-  props: React.DetailedHTMLProps<
-    React.SelectHTMLAttributes<HTMLSelectElement> & {
-      align?: "left" | "center";
-    },
-    HTMLSelectElement
-  >,
+  props: Omit<React.ComponentProps<"select">, "ref"> & {
+    ref?: React.Ref<HTMLSelectElement>;
+    align?: "left" | "center";
+  },
 ) {
   const { className, children, align, ...otherProps } = props;
   return (
@@ -490,8 +494,8 @@ export function Selector<T>(props: {
     Array.isArray(props.defaultSelectedValue)
       ? props.defaultSelectedValue
       : props.defaultSelectedValue !== undefined
-      ? [props.defaultSelectedValue]
-      : [],
+        ? [props.defaultSelectedValue]
+        : [],
   );
 
   const handleSelection = (e: MouseEvent, value: T) => {
@@ -554,7 +558,7 @@ export function Selector<T>(props: {
 }
 export function FullScreen(props: any) {
   const { children, right = 10, top = 10, ...rest } = props;
-  const ref = useRef<HTMLDivElement>();
+  const ref = useRef<HTMLDivElement>(null);
   const [fullScreen, setFullScreen] = useState(false);
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {

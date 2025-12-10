@@ -1,11 +1,11 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
 
-global.fetch = jest.fn(() =>
+global.fetch = jest.fn((url) =>
   Promise.resolve({
     ok: true,
     status: 200,
-    json: () => Promise.resolve({}),
+    json: () => Promise.resolve(typeof url === "string" && url.includes("plugins") ? [] : {}),
     headers: new Headers(),
     redirected: false,
     statusText: "OK",
@@ -20,5 +20,9 @@ global.fetch = jest.fn(() =>
     blob: () => Promise.resolve(new Blob()),
     formData: () => Promise.resolve(new FormData()),
     text: () => Promise.resolve(""),
-  }),
+  } as Response),
 );
+
+jest.mock("nanoid", () => ({
+  nanoid: () => "test-id",
+}));

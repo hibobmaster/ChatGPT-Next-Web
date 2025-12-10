@@ -24,7 +24,7 @@ export class AudioHandler {
   }
 
   getByteFrequencyData() {
-    this.analyser.getByteFrequencyData(this.analyserData);
+    this.analyser.getByteFrequencyData(this.analyserData as any);
     return this.analyserData;
   }
 
@@ -169,7 +169,7 @@ export class AudioHandler {
     view.setUint32(40, byteLength, true); // data chunk length
 
     // using data.buffer, so no need to setUint16 to view.
-    return new Blob([view, data.buffer], { type: "audio/mpeg" });
+    return new Blob([view, data.buffer as any], { type: "audio/mpeg" });
   }
   savePlayFile() {
     // @ts-ignore

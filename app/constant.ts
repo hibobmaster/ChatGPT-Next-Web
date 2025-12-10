@@ -457,6 +457,7 @@ export const VISION_MODEL_REGEXES = [
   /gemini-1\.5/,
   /gemini-exp/,
   /gemini-2\.0/,
+  /gemini-2\.5/,
   /learnlm/,
   /qwen-vl/,
   /qwen2-vl/,
@@ -520,6 +521,7 @@ const googleModels = [
   "gemini-2.0-flash-thinking-exp-01-21",
   "gemini-2.0-pro-exp",
   "gemini-2.0-pro-exp-02-05",
+  "gemini-2.5-pro",
 ];
 
 const anthropicModels = [

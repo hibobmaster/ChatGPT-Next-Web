@@ -130,7 +130,7 @@ export function getLocalAppState() {
 
 export function setLocalAppState(appState: AppState) {
   Object.entries(LocalStateSetters).forEach(([key, setter]) => {
-    setter(appState[key as keyof AppState]);
+    (setter as any)(appState[key as keyof AppState]);
   });
 }
 

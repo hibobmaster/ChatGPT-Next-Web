@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 async function handle(
   req: NextRequest,
-  { params }: { params: { action: string; key: string[] } },
+  props: { params: Promise<{ action: string; key: string[] }> },
 ) {
+  const params = await props.params;
   const requestUrl = new URL(req.url);
   const endpoint = requestUrl.searchParams.get("endpoint");
 

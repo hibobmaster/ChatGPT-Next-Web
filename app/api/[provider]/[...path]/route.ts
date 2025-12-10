@@ -18,42 +18,43 @@ import { handle as proxyHandler } from "../../proxy";
 
 async function handle(
   req: NextRequest,
-  { params }: { params: { provider: string; path: string[] } },
+  { params }: { params: Promise<{ provider: string; path: string[] }> },
 ) {
-  const apiPath = `/api/${params.provider}`;
-  console.log(`[${params.provider} Route] params `, params);
+  const p = await params; // Resolve the promise
+  const apiPath = `/api/${p.provider}`;
+  console.log(`[${p.provider} Route] params `, p);
   switch (apiPath) {
     case ApiPath.Azure:
-      return azureHandler(req, { params });
+      return azureHandler(req, { params: p });
     case ApiPath.Google:
-      return googleHandler(req, { params });
+      return googleHandler(req, { params: p });
     case ApiPath.Anthropic:
-      return anthropicHandler(req, { params });
+      return anthropicHandler(req, { params: p });
     case ApiPath.Baidu:
-      return baiduHandler(req, { params });
+      return baiduHandler(req, { params: p });
     case ApiPath.ByteDance:
-      return bytedanceHandler(req, { params });
+      return bytedanceHandler(req, { params: p });
     case ApiPath.Alibaba:
-      return alibabaHandler(req, { params });
+      return alibabaHandler(req, { params: p });
     // case ApiPath.Tencent: using "/api/tencent"
     case ApiPath.Moonshot:
-      return moonshotHandler(req, { params });
+      return moonshotHandler(req, { params: p });
     case ApiPath.Stability:
-      return stabilityHandler(req, { params });
+      return stabilityHandler(req, { params: p });
     case ApiPath.Iflytek:
-      return iflytekHandler(req, { params });
+      return iflytekHandler(req, { params: p });
     case ApiPath.DeepSeek:
-      return deepseekHandler(req, { params });
+      return deepseekHandler(req, { params: p });
     case ApiPath.XAI:
-      return xaiHandler(req, { params });
+      return xaiHandler(req, { params: p });
     case ApiPath.ChatGLM:
-      return chatglmHandler(req, { params });
+      return chatglmHandler(req, { params: p });
     case ApiPath.SiliconFlow:
-      return siliconflowHandler(req, { params });
+      return siliconflowHandler(req, { params: p });
     case ApiPath.OpenAI:
-      return openaiHandler(req, { params });
+      return openaiHandler(req, { params: p });
     default:
-      return proxyHandler(req, { params });
+      return proxyHandler(req, { params: p });
   }
 }
 

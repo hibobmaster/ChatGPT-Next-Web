@@ -6,7 +6,7 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { useParams } from "react-router";
+import { useParams } from "next/navigation";
 import { IconButton } from "./button";
 import { nanoid } from "nanoid";
 import ExportIcon from "../icons/share.svg";
@@ -128,19 +128,19 @@ export function ArtifactsShareButton({
     id
       ? Promise.resolve({ id })
       : fetch(ApiPath.Artifacts, {
-          method: "POST",
-          body: code,
+        method: "POST",
+        body: code,
+      })
+        .then((res) => res.json())
+        .then(({ id }) => {
+          if (id) {
+            return { id };
+          }
+          throw Error();
         })
-          .then((res) => res.json())
-          .then(({ id }) => {
-            if (id) {
-              return { id };
-            }
-            throw Error();
-          })
-          .catch((e) => {
-            showToast(Locale.Export.Artifacts.Error);
-          });
+        .catch((e) => {
+          showToast(Locale.Export.Artifacts.Error);
+        });
   return (
     <>
       <div className="window-action-button" style={style}>
@@ -203,7 +203,7 @@ export function ArtifactsShareButton({
 }
 
 export function Artifacts() {
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(true);
   const [fileName, setFileName] = useState("");

@@ -51,7 +51,7 @@ export function createPersistStore<T extends object, M>(
         },
         (set, get) => {
           return {
-            ...methods(set, get as any),
+            ...methods(set as any, get as any),
 
             markUpdate() {
               set({ lastUpdateTime: Date.now() } as Partial<

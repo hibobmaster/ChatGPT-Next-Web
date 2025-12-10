@@ -133,7 +133,8 @@ export function ControlParamItem(props: {
   title: string;
   subTitle?: string;
   required?: boolean;
-  children?: JSX.Element | JSX.Element[];
+  children?: React.ReactNode;
+  icon?: React.ReactNode;
   className?: string;
 }) {
   return (
@@ -164,7 +165,7 @@ export function ControlParam(props: {
   return (
     <>
       {props.columns?.map((item) => {
-        let element: null | JSX.Element;
+        let element: null | React.ReactNode;
         switch (item.type) {
           case "textarea":
             element = (

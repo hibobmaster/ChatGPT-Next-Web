@@ -16,7 +16,7 @@ export const McpRequestMessageSchema: z.ZodType<McpRequestMessage> = z.object({
   jsonrpc: z.literal("2.0").optional(),
   id: z.union([z.string(), z.number()]).optional(),
   method: z.string(),
-  params: z.record(z.unknown()).optional(),
+  params: z.record(z.string(), z.unknown()).optional(),
 });
 
 export interface McpResponseMessage {
@@ -36,7 +36,7 @@ export const McpResponseMessageSchema: z.ZodType<McpResponseMessage> = z.object(
   {
     jsonrpc: z.literal("2.0").optional(),
     id: z.union([z.string(), z.number()]).optional(),
-    result: z.record(z.unknown()).optional(),
+    result: z.record(z.string(), z.unknown()).optional(),
     error: z
       .object({
         code: z.number(),
@@ -58,7 +58,7 @@ export interface McpNotifications {
 export const McpNotificationsSchema: z.ZodType<McpNotifications> = z.object({
   jsonrpc: z.literal("2.0").optional(),
   method: z.string(),
-  params: z.record(z.unknown()).optional(),
+  params: z.record(z.string(), z.unknown()).optional(),
 });
 
 ////////////

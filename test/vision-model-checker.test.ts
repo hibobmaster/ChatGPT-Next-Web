@@ -18,6 +18,7 @@ describe("isVisionModel", () => {
       "claude-3-opus",
       "gemini-1.5-pro",
       "gemini-2.0",
+      "gemini-2.5-pro",
       "gemini-exp-vision",
       "learnlm-vision",
       "qwen-vl-max",
@@ -50,7 +51,7 @@ describe("isVisionModel", () => {
 
   test("should identify models from VISION_MODELS env var", () => {
     process.env.VISION_MODELS = "custom-vision-model,another-vision-model";
-    
+
     expect(isVisionModel("custom-vision-model")).toBe(true);
     expect(isVisionModel("another-vision-model")).toBe(true);
     expect(isVisionModel("unrelated-model")).toBe(false);

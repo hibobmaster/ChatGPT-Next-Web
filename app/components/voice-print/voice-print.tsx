@@ -14,7 +14,7 @@ export function VoicePrint({ frequencies, isActive }: VoicePrintProps) {
   // 控制保留的历史数据帧数，影响平滑度
   const historyLengthRef = useRef(10);
   // 存储动画帧ID，用于清理
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | undefined>(undefined);
 
   /**
    * 更新频率历史数据
