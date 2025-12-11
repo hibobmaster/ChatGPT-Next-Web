@@ -1,4 +1,4 @@
-@import "../styles/animation.scss";
+@use "../styles/animation.scss";
 
 .card {
   background-color: var(--white);
@@ -19,11 +19,13 @@
   right: 0;
   top: calc(100% + 10px);
 }
+
 @media screen and (max-width: 600px) {
   .popover-content {
     width: auto;
   }
 }
+
 .popover-mask {
   position: fixed;
   top: 0;
@@ -65,10 +67,12 @@
   &.vertical {
     flex-direction: column;
     align-items: start;
+
     .list-header {
       .list-item-title {
         margin-bottom: 5px;
       }
+
       .list-item-sub-title {
         margin-bottom: 2px;
       }
@@ -316,6 +320,7 @@
 
   &-content {
     min-width: 300px;
+
     .list {
       max-height: 90vh;
       overflow-x: hidden;
@@ -336,4 +341,3 @@
     }
   }
 }
-

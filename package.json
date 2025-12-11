@@ -35,6 +35,8 @@
     "heic2any": "^0.0.4",
     "html-to-image": "^1.11.13",
     "idb-keyval": "^6.2.2",
+    "js-yaml": "^4.1.1",
+    "katex": "^0.16.27",
     "lodash-es": "^4.17.21",
     "markdown-to-txt": "^2.0.1",
     "mermaid": "^11.12.2",

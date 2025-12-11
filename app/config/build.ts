@@ -13,8 +13,23 @@ export const getBuildConfig = () => {
   const version = "v" + tauriConfig.package.version;
 
   const commitInfo = (() => {
+    // Only run git commands on server (Node.js environment with child_process)
+    if (typeof window !== "undefined") {
+      return {
+        commitDate: "unknown",
+        commitHash: "unknown",
+      };
+    }
     try {
-      const childProcess = require("child_process");
+      // Dynamic require to prevent Turbopack from bundling child_process in client
+      const childProcess =
+        typeof require !== "undefined" ? require("child_process") : null;
+      if (!childProcess) {
+        return {
+          commitDate: "unknown",
+          commitHash: "unknown",
+        };
+      }
       const commitDate: string = childProcess
         .execSync('git log -1 --format="%at000" --date=unix')
         .toString()

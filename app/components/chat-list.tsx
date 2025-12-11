@@ -9,6 +9,7 @@ import {
 } from "@hello-pangea/dnd";
 
 import { useChatStore } from "../store";
+import { useShallow } from "zustand/react/shallow";
 
 import Locale from "../locales";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -104,12 +105,12 @@ export function ChatItem(props: {
 
 export function ChatList(props: { narrow?: boolean }) {
   const [sessions, selectedIndex, selectSession, moveSession] = useChatStore(
-    (state) => [
+    useShallow((state) => [
       state.sessions,
       state.currentSessionIndex,
       state.selectSession,
       state.moveSession,
-    ],
+    ]),
   );
   const chatStore = useChatStore();
   const navigate = useNavigate();
