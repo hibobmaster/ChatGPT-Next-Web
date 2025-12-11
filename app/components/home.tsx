@@ -14,7 +14,7 @@ import dynamic from "next/dynamic";
 import { Path, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
 
-import { getISOLang, getLang } from "../locales";
+import { getISOLang } from "../locales";
 
 import {
   HashRouter as Router,
@@ -128,6 +128,7 @@ const useHasHydrated = () => {
   const [hasHydrated, setHasHydrated] = useState<boolean>(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasHydrated(true);
   }, []);
 
@@ -212,7 +213,6 @@ function Screen() {
     <div
       className={clsx(styles.container, {
         [styles["tight-container"]]: shouldTightBorder,
-        [styles["rtl-screen"]]: getLang() === "ar",
       })}
     >
       {renderContent()}

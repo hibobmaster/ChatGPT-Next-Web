@@ -16,8 +16,7 @@ import EditIcon from "../icons/rename.svg";
 import ExportIcon from "../icons/share.svg";
 import ReturnIcon from "../icons/return.svg";
 import CopyIcon from "../icons/copy.svg";
-import SpeakIcon from "../icons/speak.svg";
-import SpeakStopIcon from "../icons/speak-stop.svg";
+
 import LoadingIcon from "../icons/three-dots.svg";
 import LoadingButtonIcon from "../icons/loading.svg";
 import PromptIcon from "../icons/prompt.svg";
@@ -101,8 +100,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import {
   CHAT_PAGE_SIZE,
-  DEFAULT_TTS_ENGINE,
-  ModelProvider,
   Path,
   REQUEST_TIMEOUT_MS,
   ServiceProvider,
@@ -116,9 +113,7 @@ import { prettyObject } from "../utils/format";
 import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
 import { useAllModels } from "../utils/hooks";
-import { ClientApi, MultimodalContent } from "../client/api";
-import { createTTSPlayer } from "../utils/audio";
-import { MsEdgeTTS, OUTPUT_FORMAT } from "../utils/ms_edge_tts";
+import { MultimodalContent } from "../client/api";
 
 import { isEmpty } from "lodash-es";
 import { getModelProvider } from "../utils/model";
@@ -127,8 +122,6 @@ import clsx from "clsx";
 import { getAvailableClientsCount, isMcpEnabled } from "../mcp/actions";
 
 const localStorage = safeLocalStorage();
-
-const ttsPlayer = createTTSPlayer();
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -683,10 +676,11 @@ export function ChatActions(props: {
           <Selector
             defaultSelectedValue={`${currentModel}@${currentProviderName}`}
             items={models.map((m) => ({
-              title: `${m.displayName}${m?.provider?.providerName
-                ? " (" + m?.provider?.providerName + ")"
-                : ""
-                }`,
+              title: `${m.displayName}${
+                m?.provider?.providerName
+                  ? " (" + m?.provider?.providerName + ")"
+                  : ""
+              }`,
               value: `${m.name}@${m?.provider?.providerName}`,
             }))}
             onClose={() => setShowModelSelector(false)}
@@ -985,7 +979,7 @@ export function ShortcutKeyModal(props: { onClose: () => void }) {
   );
 }
 
-function _Chat() {
+function ChatSession() {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
   const chatStore = useChatStore();
@@ -1003,9 +997,9 @@ function _Chat() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolledToBottom = scrollRef?.current
     ? Math.abs(
-      scrollRef.current.scrollHeight -
-      (scrollRef.current.scrollTop + scrollRef.current.clientHeight),
-    ) <= 1
+        scrollRef.current.scrollHeight -
+          (scrollRef.current.scrollTop + scrollRef.current.clientHeight),
+      ) <= 1
     : false;
   const isAttachWithTop = useMemo(() => {
     const lastMessage = scrollRef.current?.lastElementChild as HTMLElement;
@@ -1283,51 +1277,6 @@ function _Chat() {
   };
 
   const accessStore = useAccessStore();
-  const [speechStatus, setSpeechStatus] = useState(false);
-  const [speechLoading, setSpeechLoading] = useState(false);
-
-  async function openaiSpeech(text: string) {
-    if (speechStatus) {
-      ttsPlayer.stop();
-      setSpeechStatus(false);
-    } else {
-      var api: ClientApi;
-      api = new ClientApi(ModelProvider.GPT);
-      const config = useAppConfig.getState();
-      setSpeechLoading(true);
-      ttsPlayer.init();
-      let audioBuffer: ArrayBuffer;
-      const { markdownToTxt } = require("markdown-to-txt");
-      const textContent = markdownToTxt(text);
-      if (config.ttsConfig.engine !== DEFAULT_TTS_ENGINE) {
-        const edgeVoiceName = accessStore.edgeVoiceName();
-        const tts = new MsEdgeTTS();
-        await tts.setMetadata(
-          edgeVoiceName,
-          OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3,
-        );
-        audioBuffer = await tts.toArrayBuffer(textContent);
-      } else {
-        audioBuffer = await api.llm.speech({
-          model: config.ttsConfig.model,
-          input: textContent,
-          voice: config.ttsConfig.voice,
-          speed: config.ttsConfig.speed,
-        });
-      }
-      setSpeechStatus(true);
-      ttsPlayer
-        .play(audioBuffer, () => {
-          setSpeechStatus(false);
-        })
-        .catch((e) => {
-          console.error("[OpenAI Speech]", e);
-          showToast(prettyObject(e));
-          setSpeechStatus(false);
-        })
-        .finally(() => setSpeechLoading(false));
-    }
-  }
 
   const context: RenderMessage[] = useMemo(() => {
     return session.mask.hideContext ? [] : session.mask.context.slice();
@@ -1351,27 +1300,27 @@ function _Chat() {
       .concat(
         isLoading
           ? [
-            {
-              ...createMessage({
-                role: "assistant",
-                content: "……",
-              }),
-              preview: true,
-            },
-          ]
+              {
+                ...createMessage({
+                  role: "assistant",
+                  content: "……",
+                }),
+                preview: true,
+              },
+            ]
           : [],
       )
       .concat(
         userInput.length > 0 && config.sendPreviewBubble
           ? [
-            {
-              ...createMessage({
-                role: "user",
-                content: userInput,
-              }),
-              preview: true,
-            },
-          ]
+              {
+                ...createMessage({
+                  role: "user",
+                  content: userInput,
+                }),
+                preview: true,
+              },
+            ]
           : [],
       );
   }, [
@@ -1468,7 +1417,7 @@ function _Chat() {
         if (payload.key || payload.url) {
           showConfirm(
             Locale.URLCommand.Settings +
-            `\n${JSON.stringify(payload, null, 4)}`,
+              `\n${JSON.stringify(payload, null, 4)}`,
           ).then((res) => {
             if (!res) return;
             if (payload.key) {
@@ -1912,27 +1861,6 @@ function _Chat() {
                                           )
                                         }
                                       />
-                                      {config.ttsConfig.enable && (
-                                        <ChatAction
-                                          text={
-                                            speechStatus
-                                              ? Locale.Chat.Actions.StopSpeech
-                                              : Locale.Chat.Actions.Speech
-                                          }
-                                          icon={
-                                            speechStatus ? (
-                                              <SpeakStopIcon />
-                                            ) : (
-                                              <SpeakIcon />
-                                            )
-                                          }
-                                          onClick={() =>
-                                            openaiSpeech(
-                                              getMessageTextContent(message),
-                                            )
-                                          }
-                                        />
-                                      )}
                                     </>
                                   )}
                                 </div>
@@ -2007,7 +1935,7 @@ function _Chat() {
                                       <img
                                         className={
                                           styles[
-                                          "chat-message-item-image-multi"
+                                            "chat-message-item-image-multi"
                                           ]
                                         }
                                         key={index}
@@ -2166,5 +2094,5 @@ function _Chat() {
 export function Chat() {
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
-  return <_Chat key={session.id}></_Chat>;
+  return <ChatSession key={session.id}></ChatSession>;
 }

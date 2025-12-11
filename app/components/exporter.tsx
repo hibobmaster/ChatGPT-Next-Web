@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { ChatMessage, useAppConfig, useChatStore } from "../store";
 import Locale from "../locales";
 import styles from "./exporter.module.scss";
@@ -273,11 +272,11 @@ export function RenderExport(props: {
     }
 
     const renderMsgs = messages.map((v, i) => {
-      const [role, _] = v.id.split(":");
+      const [role] = v.id.split(":");
       return {
         id: i.toString(),
         role: role as any,
-        content: role === "user" ? v.textContent ?? "" : v.innerHTML,
+        content: role === "user" ? (v.textContent ?? "") : v.innerHTML,
         date: "",
       };
     });
@@ -489,7 +488,7 @@ export function ImagePreviewer(props: {
         link.click();
         refreshPreview();
       }
-    } catch (error) {
+    } catch (_) {
       showToast(Locale.Download.Failed);
     }
   };
@@ -497,9 +496,12 @@ export function ImagePreviewer(props: {
   const refreshPreview = () => {
     const dom = previewRef.current;
     if (dom) {
+      // eslint-disable-next-line
       dom.innerHTML = dom.innerHTML; // Refresh the content of the preview by resetting its HTML for fix a bug glitching
     }
   };
+
+  const [date] = useState(() => Date.now());
 
   return (
     <div className={styles["image-previewer"]}>
@@ -524,7 +526,7 @@ export function ImagePreviewer(props: {
           </div>
 
           <div>
-            <div className={styles["main-title"]}>NextChat</div>
+            <div className={styles["main-title"]}>QuanQuanChat</div>
             <div className={styles["sub-title"]}>
               github.com/ChatGPTNextWeb/ChatGPT-Next-Web
             </div>
@@ -549,9 +551,7 @@ export function ImagePreviewer(props: {
             </div>
             <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Time}:{" "}
-              {new Date(
-                props.messages.at(-1)?.date ?? Date.now(),
-              ).toLocaleString()}
+              {new Date(props.messages.at(-1)?.date ?? date).toLocaleString()}
             </div>
           </div>
         </div>

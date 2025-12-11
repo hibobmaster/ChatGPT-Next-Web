@@ -68,7 +68,7 @@ export function useDragSideBar() {
   const config = useAppConfig();
   const startX = useRef(0);
   const startDragWidth = useRef(config.sidebarWidth ?? DEFAULT_SIDEBAR_WIDTH);
-  const lastUpdateTime = useRef(Date.now());
+  const lastUpdateTime = useRef(0);
 
   const toggleSideBar = () => {
     config.update((config) => {
@@ -250,7 +250,7 @@ export function SideBar(props: { className?: string }) {
       {...props}
     >
       <SideBarHeader
-        title="NextChat"
+        title="QuanQuanChat"
         subTitle="新增grok模型，gemini/grok部分模型支持图片上传"
         logo={<ChatGptIcon />}
         shouldNarrow={shouldNarrow}

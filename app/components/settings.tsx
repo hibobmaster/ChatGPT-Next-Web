@@ -9,7 +9,6 @@ import CopyIcon from "../icons/copy.svg";
 import ClearIcon from "../icons/clear.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import EditIcon from "../icons/edit.svg";
-import FireIcon from "../icons/fire.svg";
 import EyeIcon from "../icons/eye.svg";
 import DownloadIcon from "../icons/download.svg";
 import UploadIcon from "../icons/upload.svg";
@@ -19,7 +18,6 @@ import ConfirmIcon from "../icons/confirm.svg";
 import ConnectionIcon from "../icons/connection.svg";
 import CloudSuccessIcon from "../icons/cloud-success.svg";
 import CloudFailIcon from "../icons/cloud-fail.svg";
-import { trackSettingsPageGuideToCPaymentClick } from "../utils/auth-settings-events";
 import {
   Input,
   List,
@@ -71,12 +69,11 @@ import {
   UPDATE_URL,
   Stability,
   Iflytek,
-  SAAS_CHAT_URL,
   ChatGLM,
   DeepSeek,
   SiliconFlow,
 } from "../constant";
-import { Prompt, SearchService, usePromptStore } from "../store/prompt";
+import { SearchService, usePromptStore } from "../store/prompt";
 import { ErrorBoundary } from "./error";
 import { InputRange } from "./input-range";
 import { useNavigate } from "react-router-dom";
@@ -143,19 +140,15 @@ function UserPromptModal(props: { onClose?: () => void }) {
   const builtinPrompts = SearchService.builtinPrompts;
   const allPrompts = userPrompts.concat(builtinPrompts);
   const [searchInput, setSearchInput] = useState("");
-  const [searchPrompts, setSearchPrompts] = useState<Prompt[]>([]);
+  const searchPrompts = useMemo(() => {
+    if (searchInput.length > 0) {
+      return SearchService.search(searchInput);
+    }
+    return [];
+  }, [searchInput]);
   const prompts = searchInput.length > 0 ? searchPrompts : allPrompts;
 
   const [editingPromptId, setEditingPromptId] = useState<string>();
-
-  useEffect(() => {
-    if (searchInput.length > 0) {
-      const searchResult = SearchService.search(searchInput);
-      setSearchPrompts(searchResult);
-    } else {
-      setSearchPrompts([]);
-    }
-  }, [searchInput]);
 
   return (
     <div className="modal-mask">
@@ -190,7 +183,7 @@ function UserPromptModal(props: { onClose?: () => void }) {
           ></input>
 
           <div className={styles["user-prompt-list"]}>
-            {prompts.map((v, _) => (
+            {prompts.map((v) => (
               <div className={styles["user-prompt-item"]} key={v.id ?? v.title}>
                 <div className={styles["user-prompt-header"]}>
                   <div className={styles["user-prompt-title"]}>{v.title}</div>
@@ -687,31 +680,6 @@ export function Settings() {
           accessStore.update(
             (access) => (access.accessCode = e.currentTarget.value),
           );
-        }}
-      />
-    </ListItem>
-  );
-
-  const saasStartComponent = (
-    <ListItem
-      className={styles["subtitle-button"]}
-      title={
-        Locale.Settings.Access.SaasStart.Title +
-        `${Locale.Settings.Access.SaasStart.Label}`
-      }
-      subTitle={Locale.Settings.Access.SaasStart.SubTitle}
-    >
-      <IconButton
-        aria={
-          Locale.Settings.Access.SaasStart.Title +
-          Locale.Settings.Access.SaasStart.ChatNow
-        }
-        icon={<FireIcon />}
-        type={"primary"}
-        text={Locale.Settings.Access.SaasStart.ChatNow}
-        onClick={() => {
-          trackSettingsPageGuideToCPaymentClick();
-          window.location.href = SAAS_CHAT_URL;
         }}
       />
     </ListItem>
@@ -1515,8 +1483,8 @@ export function Settings() {
               checkingUpdate
                 ? Locale.Settings.Update.IsChecking
                 : hasNewVersion
-                ? Locale.Settings.Update.FoundUpdate(remoteId ?? "ERROR")
-                : Locale.Settings.Update.IsLatest
+                  ? Locale.Settings.Update.FoundUpdate(remoteId ?? "ERROR")
+                  : Locale.Settings.Update.IsLatest
             }
           >
             {checkingUpdate ? (

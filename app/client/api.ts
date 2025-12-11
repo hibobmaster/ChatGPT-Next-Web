@@ -29,7 +29,6 @@ export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
 
 export const Models = ["gpt-3.5-turbo", "gpt-4"] as const;
-export const TTSModels = ["tts-1", "tts-1-hd"] as const;
 export type ChatModel = ModelType;
 
 export interface MultimodalContent {
@@ -189,7 +188,7 @@ export class ClientApi {
         {
           from: "human",
           value:
-            "Share from [NextChat]: https://github.com/Yidadaa/ChatGPT-Next-Web",
+            "Share from [QuanQuanChat]: https://github.com/Yidadaa/ChatGPT-Next-Web",
         },
       ]);
     // 敬告二开开发者们，为了开源大模型的发展，请不要修改上述消息，此消息用于后续数据清洗使用
@@ -264,28 +263,31 @@ export function getHeaders(ignoreHeaders: boolean = false) {
     const apiKey = isGoogle
       ? accessStore.googleApiKey
       : isAzure
-      ? accessStore.azureApiKey
-      : isAnthropic
-      ? accessStore.anthropicApiKey
-      : isByteDance
-      ? accessStore.bytedanceApiKey
-      : isAlibaba
-      ? accessStore.alibabaApiKey
-      : isMoonshot
-      ? accessStore.moonshotApiKey
-      : isXAI
-      ? accessStore.xaiApiKey
-      : isDeepSeek
-      ? accessStore.deepseekApiKey
-      : isChatGLM
-      ? accessStore.chatglmApiKey
-      : isSiliconFlow
-      ? accessStore.siliconflowApiKey
-      : isIflytek
-      ? accessStore.iflytekApiKey && accessStore.iflytekApiSecret
-        ? accessStore.iflytekApiKey + ":" + accessStore.iflytekApiSecret
-        : ""
-      : accessStore.openaiApiKey;
+        ? accessStore.azureApiKey
+        : isAnthropic
+          ? accessStore.anthropicApiKey
+          : isByteDance
+            ? accessStore.bytedanceApiKey
+            : isAlibaba
+              ? accessStore.alibabaApiKey
+              : isMoonshot
+                ? accessStore.moonshotApiKey
+                : isXAI
+                  ? accessStore.xaiApiKey
+                  : isDeepSeek
+                    ? accessStore.deepseekApiKey
+                    : isChatGLM
+                      ? accessStore.chatglmApiKey
+                      : isSiliconFlow
+                        ? accessStore.siliconflowApiKey
+                        : isIflytek
+                          ? accessStore.iflytekApiKey &&
+                            accessStore.iflytekApiSecret
+                            ? accessStore.iflytekApiKey +
+                              ":" +
+                              accessStore.iflytekApiSecret
+                            : ""
+                          : accessStore.openaiApiKey;
     return {
       isGoogle,
       isAzure,
@@ -308,10 +310,10 @@ export function getHeaders(ignoreHeaders: boolean = false) {
     return isAzure
       ? "api-key"
       : isAnthropic
-      ? "x-api-key"
-      : isGoogle
-      ? "x-goog-api-key"
-      : "Authorization";
+        ? "x-api-key"
+        : isGoogle
+          ? "x-goog-api-key"
+          : "Authorization";
   }
 
   const {

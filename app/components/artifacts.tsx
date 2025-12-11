@@ -128,19 +128,19 @@ export function ArtifactsShareButton({
     id
       ? Promise.resolve({ id })
       : fetch(ApiPath.Artifacts, {
-        method: "POST",
-        body: code,
-      })
-        .then((res) => res.json())
-        .then(({ id }) => {
-          if (id) {
-            return { id };
-          }
-          throw Error();
+          method: "POST",
+          body: code,
         })
-        .catch((e) => {
-          showToast(Locale.Export.Artifacts.Error);
-        });
+          .then((res) => res.json())
+          .then(({ id }) => {
+            if (id) {
+              return { id };
+            }
+            throw Error();
+          })
+          .catch((e) => {
+            showToast(Locale.Export.Artifacts.Error);
+          });
   return (
     <>
       <div className="window-action-button" style={style}>
@@ -191,7 +191,7 @@ export function ArtifactsShareButton({
             ]}
           >
             <div>
-              <a target="_blank" href={shareUrl}>
+              <a target="_blank" href={shareUrl} rel="noreferrer">
                 {shareUrl}
               </a>
             </div>
@@ -239,7 +239,7 @@ export function Artifacts() {
           shadow
           onClick={() => previewRef.current?.reload()}
         />
-        <div className={styles["artifacts-title"]}>NextChat Artifacts</div>
+        <div className={styles["artifacts-title"]}>QuanQuanChat Artifacts</div>
         <ArtifactsShareButton
           id={id}
           getCode={() => code}

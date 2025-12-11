@@ -8,7 +8,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "NextChat",
+    "productName": "QuanQuanChat",
     "version": "2.15.8"
   },
   "tauri": {
@@ -54,7 +54,10 @@
       "http": {
         "all": true,
         "request": true,
-        "scope": ["https://*", "http://*"]
+        "scope": [
+          "https://*",
+          "http://*"
+        ]
       }
     },
     "bundle": {
@@ -73,7 +76,7 @@
         "icons/icon.ico"
       ],
       "identifier": "com.yida.chatgpt.next.web",
-      "longDescription": "NextChat is a cross-platform ChatGPT client, including Web/Win/Linux/OSX/PWA.",
+      "longDescription": "QuanQuanChat is a cross-platform ChatGPT client, including Web/Win/Linux/OSX/PWA.",
       "macOS": {
         "entitlements": null,
         "exceptionDomain": "",
@@ -82,7 +85,7 @@
         "signingIdentity": null
       },
       "resources": [],
-      "shortDescription": "NextChat App",
+      "shortDescription": "QuanQuanChat App",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,
@@ -110,7 +113,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "NextChat",
+        "title": "QuanQuanChat",
         "width": 960,
         "hiddenTitle": true,
         "titleBarStyle": "Overlay"
