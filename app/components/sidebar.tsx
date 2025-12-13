@@ -245,8 +245,8 @@ export function SideBar(props: { className?: string }) {
           <Image
             src={QuanquanLogo}
             alt="QuanQuanChat logo"
-            width={32}
-            height={32}
+            width={64}
+            height={64}
             className={styles["sidebar-logo-image"]}
             priority
           />
