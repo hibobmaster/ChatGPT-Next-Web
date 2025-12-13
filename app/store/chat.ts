@@ -860,12 +860,13 @@ export const useChatStore = createPersistStore(
   },
   {
     name: StoreKey.Chat,
-    version: 3.3,
+    version: 3.4,
     migrate(persistedState, version) {
       const state = persistedState as any;
       const newState = JSON.parse(
         JSON.stringify(state),
       ) as typeof DEFAULT_CHAT_STATE;
+      const REMOVED_PROVIDERS = ["Azure", "Baidu", "Iflytek", "SiliconFlow"];
 
       if (version < 2) {
         newState.sessions = [];
@@ -922,6 +923,17 @@ export const useChatStore = createPersistStore(
           const config = useAppConfig.getState();
           s.mask.modelConfig.compressModel = "";
           s.mask.modelConfig.compressProviderName = "";
+        });
+      }
+      if (version < 3.4) {
+        newState.sessions.forEach((s) => {
+          if (
+            REMOVED_PROVIDERS.includes(
+              s?.mask?.modelConfig?.providerName as any,
+            )
+          ) {
+            s.mask.modelConfig.providerName = ServiceProvider.OpenAI;
+          }
         });
       }
 

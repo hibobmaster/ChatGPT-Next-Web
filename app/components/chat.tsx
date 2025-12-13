@@ -46,7 +46,6 @@ import StyleIcon from "../icons/palette.svg";
 import PluginIcon from "../icons/plugin.svg";
 import ShortcutkeyIcon from "../icons/shortcutkey.svg";
 import McpToolIcon from "../icons/tool.svg";
-import HeadphoneIcon from "../icons/headphone.svg";
 import {
   BOT_HELLO,
   ChatMessage,
@@ -117,7 +116,6 @@ import { MultimodalContent } from "../client/api";
 
 import { isEmpty } from "lodash-es";
 import { getModelProvider } from "../utils/model";
-import { RealtimeChat } from "@/app/components/realtime-chat";
 import clsx from "clsx";
 import { getAvailableClientsCount, isMcpEnabled } from "../mcp/actions";
 
@@ -495,7 +493,6 @@ export function ChatActions(props: {
   uploading: boolean;
   setShowShortcutKeyModal: React.Dispatch<React.SetStateAction<boolean>>;
   setUserInput: (input: string) => void;
-  setShowChatSidePanel: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const config = useAppConfig();
   const navigate = useNavigate();
@@ -827,15 +824,6 @@ export function ChatActions(props: {
         )}
         {!isMobileScreen && <MCPAction />}
       </>
-      <div className={styles["chat-input-actions-end"]}>
-        {config.realtimeConfig.enable && (
-          <ChatAction
-            onClick={() => props.setShowChatSidePanel(true)}
-            text={"Realtime Chat"}
-            icon={<HeadphoneIcon />}
-          />
-        )}
-      </div>
     </div>
   );
 }
@@ -1625,8 +1613,6 @@ function ChatSession() {
     };
   }, [messages, chatStore, navigate, session]);
 
-  const [showChatSidePanel, setShowChatSidePanel] = useState(false);
-
   return (
     <>
       <div className={styles.chat} key={session.id}>
@@ -1993,7 +1979,6 @@ function ChatSession() {
                 }}
                 setShowShortcutKeyModal={setShowShortcutKeyModal}
                 setUserInput={setUserInput}
-                setShowChatSidePanel={setShowChatSidePanel}
               />
               <label
                 className={clsx(styles["chat-input-panel-inner"], {
@@ -2052,23 +2037,6 @@ function ChatSession() {
                 />
               </label>
             </div>
-          </div>
-          <div
-            className={clsx(styles["chat-side-panel"], {
-              [styles["mobile"]]: isMobileScreen,
-              [styles["chat-side-panel-show"]]: showChatSidePanel,
-            })}
-          >
-            {showChatSidePanel && (
-              <RealtimeChat
-                onClose={() => {
-                  setShowChatSidePanel(false);
-                }}
-                onStartVoice={async () => {
-                  console.log("start voice");
-                }}
-              />
-            )}
           </div>
         </div>
       </div>

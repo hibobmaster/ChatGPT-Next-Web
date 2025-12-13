@@ -1,13 +1,10 @@
 "use client";
-// azure and openai, using same models. so using same LLMApi.
 import {
   ApiPath,
   OPENAI_BASE_URL,
   DEFAULT_MODELS,
   OpenaiPath,
-  Azure,
   REQUEST_TIMEOUT_MS,
-  ServiceProvider,
 } from "@/app/constant";
 import {
   ChatMessageTool,
@@ -16,7 +13,6 @@ import {
   useChatStore,
   usePluginStore,
 } from "@/app/store";
-import { collectModelsWithDefaultModel } from "@/app/utils/model";
 import {
   preProcessImageContent,
   uploadImage,
@@ -87,31 +83,19 @@ export class ChatGPTApi implements LLMApi {
 
     let baseUrl = "";
 
-    const isAzure = path.includes("deployments");
     if (accessStore.useCustomConfig) {
-      if (isAzure && !accessStore.isValidAzure()) {
-        throw Error(
-          "incomplete azure config, please check it in your settings page",
-        );
-      }
-
-      baseUrl = isAzure ? accessStore.azureUrl : accessStore.openaiUrl;
+      baseUrl = accessStore.openaiUrl;
     }
 
     if (baseUrl.length === 0) {
       const isApp = !!getClientConfig()?.isApp;
-      const apiPath = isAzure ? ApiPath.Azure : ApiPath.OpenAI;
-      baseUrl = isApp ? OPENAI_BASE_URL : apiPath;
+      baseUrl = isApp ? OPENAI_BASE_URL : ApiPath.OpenAI;
     }
 
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, baseUrl.length - 1);
     }
-    if (
-      !baseUrl.startsWith("http") &&
-      !isAzure &&
-      !baseUrl.startsWith(ApiPath.OpenAI)
-    ) {
+    if (!baseUrl.startsWith("http") && !baseUrl.startsWith(ApiPath.OpenAI)) {
       baseUrl = "https://" + baseUrl;
     }
 
@@ -255,37 +239,9 @@ export class ChatGPTApi implements LLMApi {
     options.onController?.(controller);
 
     try {
-      let chatPath = "";
-      if (modelConfig.providerName === ServiceProvider.Azure) {
-        // find model, and get displayName as deployName
-        const { models: configModels, customModels: configCustomModels } =
-          useAppConfig.getState();
-        const {
-          defaultModel,
-          customModels: accessCustomModels,
-          useCustomConfig,
-        } = useAccessStore.getState();
-        const models = collectModelsWithDefaultModel(
-          configModels,
-          [configCustomModels, accessCustomModels].join(","),
-          defaultModel,
-        );
-        const model = models.find(
-          (model) =>
-            model.name === modelConfig.model &&
-            model?.provider?.providerName === ServiceProvider.Azure,
-        );
-        chatPath = this.path(
-          (isDalle3 ? Azure.ImagePath : Azure.ChatPath)(
-            (model?.displayName ?? model?.name) as string,
-            useCustomConfig ? useAccessStore.getState().azureApiVersion : "",
-          ),
-        );
-      } else {
-        chatPath = this.path(
-          isDalle3 ? OpenaiPath.ImagePath : OpenaiPath.ChatPath,
-        );
-      }
+      const chatPath = this.path(
+        isDalle3 ? OpenaiPath.ImagePath : OpenaiPath.ChatPath,
+      );
       if (shouldStream) {
         let index = -1;
         const [tools, funcs] = usePluginStore

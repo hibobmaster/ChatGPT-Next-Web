@@ -9,7 +9,6 @@ import {
   ServiceProvider,
 } from "../constant";
 import { createPersistStore } from "../utils/store";
-import type { Voice } from "rt-client";
 
 export type ModelType = (typeof DEFAULT_MODELS)[number]["name"];
 
@@ -28,6 +27,7 @@ export enum Theme {
 }
 
 const config = getClientConfig();
+const REMOVED_PROVIDERS = ["Azure", "Baidu", "Iflytek", "SiliconFlow"];
 
 export const DEFAULT_CONFIG = {
   lastUpdate: Date.now(), // timestamp, to merge state
@@ -73,25 +73,11 @@ export const DEFAULT_CONFIG = {
     quality: "standard" as DalleQuality,
     style: "vivid" as DalleStyle,
   },
-
-  realtimeConfig: {
-    enable: false,
-    provider: "OpenAI" as ServiceProvider,
-    model: "gpt-4o-realtime-preview-2024-10-01",
-    apiKey: "",
-    azure: {
-      endpoint: "",
-      deployment: "",
-    },
-    temperature: 0.9,
-    voice: "alloy" as Voice,
-  },
 };
 
 export type ChatConfig = typeof DEFAULT_CONFIG;
 
 export type ModelConfig = ChatConfig["modelConfig"];
-export type RealtimeConfig = ChatConfig["realtimeConfig"];
 
 export function limitNumber(
   x: number,
@@ -161,20 +147,37 @@ export const useAppConfig = createPersistStore(
   }),
   {
     name: StoreKey.Config,
-    version: 4.1,
+    version: 4.2,
 
     merge(persistedState, currentState) {
       const state = persistedState as ChatConfig | undefined;
       if (!state) return { ...currentState };
       const models = currentState.models.slice();
-      state.models.forEach((pModel) => {
+      const persistedModels =
+        state.models?.filter(
+          (m) => !REMOVED_PROVIDERS.includes(m?.provider?.providerName as any),
+        ) ?? [];
+      const persistedModelConfig = state.modelConfig;
+      if (
+        REMOVED_PROVIDERS.includes(
+          persistedModelConfig?.providerName as unknown as string,
+        )
+      ) {
+        persistedModelConfig.providerName = ServiceProvider.OpenAI;
+      }
+      persistedModels.forEach((pModel) => {
         const idx = models.findIndex(
           (v) => v.name === pModel.name && v.provider === pModel.provider,
         );
         if (idx !== -1) models[idx] = pModel;
         else models.push(pModel);
       });
-      return { ...currentState, ...state, models: models };
+      return {
+        ...currentState,
+        ...state,
+        modelConfig: { ...state.modelConfig, ...persistedModelConfig },
+        models: models,
+      };
     },
 
     migrate(persistedState, version) {
@@ -219,6 +222,18 @@ export const useAppConfig = createPersistStore(
           DEFAULT_CONFIG.modelConfig.compressModel;
         state.modelConfig.compressProviderName =
           DEFAULT_CONFIG.modelConfig.compressProviderName;
+      }
+      if (version < 4.2) {
+        state.models = state.models?.filter(
+          (m) => !REMOVED_PROVIDERS.includes(m?.provider?.providerName as any),
+        );
+        if (
+          REMOVED_PROVIDERS.includes(
+            state.modelConfig?.providerName as unknown as string,
+          )
+        ) {
+          state.modelConfig.providerName = ServiceProvider.OpenAI;
+        }
       }
 
       return state as any;

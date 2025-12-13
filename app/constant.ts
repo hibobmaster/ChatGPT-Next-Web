@@ -16,9 +16,6 @@ export const ANTHROPIC_BASE_URL = "https://api.anthropic.com";
 
 export const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 
-export const BAIDU_BASE_URL = "https://aip.baidubce.com";
-export const BAIDU_OATUH_URL = `${BAIDU_BASE_URL}/oauth/2.0/token`;
-
 export const BYTEDANCE_BASE_URL = "https://ark.cn-beijing.volces.com";
 
 export const ALIBABA_BASE_URL = "https://dashscope.aliyuncs.com/api/";
@@ -26,15 +23,12 @@ export const ALIBABA_BASE_URL = "https://dashscope.aliyuncs.com/api/";
 export const TENCENT_BASE_URL = "https://hunyuan.tencentcloudapi.com";
 
 export const MOONSHOT_BASE_URL = "https://api.moonshot.cn";
-export const IFLYTEK_BASE_URL = "https://spark-api-open.xf-yun.com";
 
 export const DEEPSEEK_BASE_URL = "https://api.deepseek.com";
 
 export const XAI_BASE_URL = "https://api.x.ai";
 
 export const CHATGLM_BASE_URL = "https://open.bigmodel.cn";
-
-export const SILICONFLOW_BASE_URL = "https://api.siliconflow.cn";
 
 export const CACHE_URL_PREFIX = "/api/cache";
 export const UPLOAD_URL = `${CACHE_URL_PREFIX}/upload`;
@@ -56,22 +50,18 @@ export enum Path {
 
 export enum ApiPath {
   Cors = "",
-  Azure = "/api/azure",
   OpenAI = "/api/openai",
   Anthropic = "/api/anthropic",
   Google = "/api/google",
-  Baidu = "/api/baidu",
   ByteDance = "/api/bytedance",
   Alibaba = "/api/alibaba",
   Tencent = "/api/tencent",
   Moonshot = "/api/moonshot",
-  Iflytek = "/api/iflytek",
   Stability = "/api/stability",
   Artifacts = "/api/artifacts",
   XAI = "/api/xai",
   ChatGLM = "/api/chatglm",
   DeepSeek = "/api/deepseek",
-  SiliconFlow = "/api/siliconflow",
 }
 
 export enum SlotID {
@@ -116,20 +106,16 @@ export const EXPORT_MESSAGE_CLASS_NAME = "export-markdown";
 
 export enum ServiceProvider {
   OpenAI = "OpenAI",
-  Azure = "Azure",
   Google = "Google",
   Anthropic = "Anthropic",
-  Baidu = "Baidu",
   ByteDance = "ByteDance",
   Alibaba = "Alibaba",
   Tencent = "Tencent",
   Moonshot = "Moonshot",
   Stability = "Stability",
-  Iflytek = "Iflytek",
   XAI = "XAI",
   ChatGLM = "ChatGLM",
   DeepSeek = "DeepSeek",
-  SiliconFlow = "SiliconFlow",
 }
 
 // Google API safety settings, see https://ai.google.dev/gemini-api/docs/safety-settings
@@ -146,16 +132,13 @@ export enum ModelProvider {
   GPT = "GPT",
   GeminiPro = "GeminiPro",
   Claude = "Claude",
-  Ernie = "Ernie",
   Doubao = "Doubao",
   Qwen = "Qwen",
   Hunyuan = "Hunyuan",
   Moonshot = "Moonshot",
-  Iflytek = "Iflytek",
   XAI = "XAI",
   ChatGLM = "ChatGLM",
   DeepSeek = "DeepSeek",
-  SiliconFlow = "SiliconFlow",
 }
 
 export const Stability = {
@@ -179,39 +162,10 @@ export const OpenaiPath = {
   ListModelPath: "v1/models",
 };
 
-export const Azure = {
-  ChatPath: (deployName: string, apiVersion: string) =>
-    `deployments/${deployName}/chat/completions?api-version=${apiVersion}`,
-  // https://<your_resource_name>.openai.azure.com/openai/deployments/<your_deployment_name>/images/generations?api-version=<api_version>
-  ImagePath: (deployName: string, apiVersion: string) =>
-    `deployments/${deployName}/images/generations?api-version=${apiVersion}`,
-  ExampleEndpoint: "https://{resource-url}/openai",
-};
-
 export const Google = {
   ExampleEndpoint: "https://generativelanguage.googleapis.com/",
   ChatPath: (modelName: string) =>
     `v1beta/models/${modelName}:streamGenerateContent`,
-};
-
-export const Baidu = {
-  ExampleEndpoint: BAIDU_BASE_URL,
-  ChatPath: (modelName: string) => {
-    let endpoint = modelName;
-    if (modelName === "ernie-4.0-8k") {
-      endpoint = "completions_pro";
-    }
-    if (modelName === "ernie-4.0-8k-preview-0518") {
-      endpoint = "completions_adv_pro";
-    }
-    if (modelName === "ernie-3.5-8k") {
-      endpoint = "completions";
-    }
-    if (modelName === "ernie-speed-8k") {
-      endpoint = "ernie_speed";
-    }
-    return `rpc/2.0/ai_custom/v1/wenxinworkshop/chat/${endpoint}`;
-  },
 };
 
 export const ByteDance = {
@@ -233,11 +187,6 @@ export const Moonshot = {
   ChatPath: "v1/chat/completions",
 };
 
-export const Iflytek = {
-  ExampleEndpoint: IFLYTEK_BASE_URL,
-  ChatPath: "v1/chat/completions",
-};
-
 export const DeepSeek = {
   ExampleEndpoint: DEEPSEEK_BASE_URL,
   ChatPath: "chat/completions",
@@ -253,12 +202,6 @@ export const ChatGLM = {
   ChatPath: "api/paas/v4/chat/completions",
   ImagePath: "api/paas/v4/images/generations",
   VideoPath: "api/paas/v4/videos/generations",
-};
-
-export const SiliconFlow = {
-  ExampleEndpoint: SILICONFLOW_BASE_URL,
-  ChatPath: "v1/chat/completions",
-  ListModelPath: "v1/models?&sub_type=chat",
 };
 
 export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lang
@@ -527,20 +470,6 @@ const anthropicModels = [
   "claude-3-7-sonnet-latest",
 ];
 
-const baiduModels = [
-  "ernie-4.0-turbo-8k",
-  "ernie-4.0-8k",
-  "ernie-4.0-8k-preview",
-  "ernie-4.0-8k-preview-0518",
-  "ernie-4.0-8k-latest",
-  "ernie-3.5-8k",
-  "ernie-3.5-8k-0205",
-  "ernie-speed-128k",
-  "ernie-speed-8k",
-  "ernie-lite-8k",
-  "ernie-tiny-8k",
-];
-
 const bytedanceModels = [
   "Doubao-lite-4k",
   "Doubao-lite-32k",
@@ -571,14 +500,6 @@ const tencentModels = [
 ];
 
 const moonshotModes = ["moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k"];
-
-const iflytekModels = [
-  "general",
-  "generalv3",
-  "pro-128k",
-  "generalv3.5",
-  "4.0Ultra",
-];
 
 const deepseekModels = ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"];
 
@@ -613,23 +534,6 @@ const chatglmModels = [
   //   "cogvideox-flash", // free
 ];
 
-const siliconflowModels = [
-  "Qwen/Qwen2.5-7B-Instruct",
-  "Qwen/Qwen2.5-72B-Instruct",
-  "deepseek-ai/DeepSeek-R1",
-  "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
-  "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
-  "deepseek-ai/DeepSeek-V3",
-  "meta-llama/Llama-3.3-70B-Instruct",
-  "THUDM/glm-4-9b-chat",
-  "Pro/deepseek-ai/DeepSeek-R1",
-  "Pro/deepseek-ai/DeepSeek-V3",
-];
-
 let seq = 1000; // 内置的模型序号生成器从1000开始
 export const DEFAULT_MODELS = [
   ...openaiModels.map((name) => ({
@@ -643,17 +547,6 @@ export const DEFAULT_MODELS = [
       sorted: 1, // 这里是固定的，确保顺序与之前内置的版本一致
     },
   })),
-  ...openaiModels.map((name) => ({
-    name,
-    available: true,
-    sorted: seq++,
-    provider: {
-      id: "azure",
-      providerName: "Azure",
-      providerType: "azure",
-      sorted: 2,
-    },
-  })),
   ...googleModels.map((name) => ({
     name,
     available: true,
@@ -662,7 +555,7 @@ export const DEFAULT_MODELS = [
       id: "google",
       providerName: "Google",
       providerType: "google",
-      sorted: 3,
+      sorted: 2,
     },
   })),
   ...anthropicModels.map((name) => ({
@@ -673,18 +566,7 @@ export const DEFAULT_MODELS = [
       id: "anthropic",
       providerName: "Anthropic",
       providerType: "anthropic",
-      sorted: 4,
-    },
-  })),
-  ...baiduModels.map((name) => ({
-    name,
-    available: true,
-    sorted: seq++,
-    provider: {
-      id: "baidu",
-      providerName: "Baidu",
-      providerType: "baidu",
-      sorted: 5,
+      sorted: 3,
     },
   })),
   ...bytedanceModels.map((name) => ({
@@ -695,7 +577,7 @@ export const DEFAULT_MODELS = [
       id: "bytedance",
       providerName: "ByteDance",
       providerType: "bytedance",
-      sorted: 6,
+      sorted: 4,
     },
   })),
   ...alibabaModes.map((name) => ({
@@ -706,7 +588,7 @@ export const DEFAULT_MODELS = [
       id: "alibaba",
       providerName: "Alibaba",
       providerType: "alibaba",
-      sorted: 7,
+      sorted: 5,
     },
   })),
   ...tencentModels.map((name) => ({
@@ -717,7 +599,7 @@ export const DEFAULT_MODELS = [
       id: "tencent",
       providerName: "Tencent",
       providerType: "tencent",
-      sorted: 8,
+      sorted: 6,
     },
   })),
   ...moonshotModes.map((name) => ({
@@ -728,18 +610,7 @@ export const DEFAULT_MODELS = [
       id: "moonshot",
       providerName: "Moonshot",
       providerType: "moonshot",
-      sorted: 9,
-    },
-  })),
-  ...iflytekModels.map((name) => ({
-    name,
-    available: true,
-    sorted: seq++,
-    provider: {
-      id: "iflytek",
-      providerName: "Iflytek",
-      providerType: "iflytek",
-      sorted: 10,
+      sorted: 7,
     },
   })),
   ...xAIModes.map((name) => ({
@@ -750,7 +621,7 @@ export const DEFAULT_MODELS = [
       id: "xai",
       providerName: "XAI",
       providerType: "xai",
-      sorted: 11,
+      sorted: 8,
     },
   })),
   ...chatglmModels.map((name) => ({
@@ -761,7 +632,7 @@ export const DEFAULT_MODELS = [
       id: "chatglm",
       providerName: "ChatGLM",
       providerType: "chatglm",
-      sorted: 12,
+      sorted: 9,
     },
   })),
   ...deepseekModels.map((name) => ({
@@ -772,18 +643,7 @@ export const DEFAULT_MODELS = [
       id: "deepseek",
       providerName: "DeepSeek",
       providerType: "deepseek",
-      sorted: 13,
-    },
-  })),
-  ...siliconflowModels.map((name) => ({
-    name,
-    available: true,
-    sorted: seq++,
-    provider: {
-      id: "siliconflow",
-      providerName: "SiliconFlow",
-      providerType: "siliconflow",
-      sorted: 14,
+      sorted: 10,
     },
   })),
 ] as const;

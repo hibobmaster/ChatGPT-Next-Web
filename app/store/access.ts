@@ -6,17 +6,14 @@ import {
   OPENAI_BASE_URL,
   ANTHROPIC_BASE_URL,
   GEMINI_BASE_URL,
-  BAIDU_BASE_URL,
   BYTEDANCE_BASE_URL,
   ALIBABA_BASE_URL,
   TENCENT_BASE_URL,
   MOONSHOT_BASE_URL,
   STABILITY_BASE_URL,
-  IFLYTEK_BASE_URL,
   DEEPSEEK_BASE_URL,
   XAI_BASE_URL,
   CHATGLM_BASE_URL,
-  SILICONFLOW_BASE_URL,
 } from "../constant";
 import { getHeaders } from "../client/api";
 import { getClientConfig } from "../config/client";
@@ -35,8 +32,6 @@ const DEFAULT_GOOGLE_URL = isApp ? GEMINI_BASE_URL : ApiPath.Google;
 
 const DEFAULT_ANTHROPIC_URL = isApp ? ANTHROPIC_BASE_URL : ApiPath.Anthropic;
 
-const DEFAULT_BAIDU_URL = isApp ? BAIDU_BASE_URL : ApiPath.Baidu;
-
 const DEFAULT_BYTEDANCE_URL = isApp ? BYTEDANCE_BASE_URL : ApiPath.ByteDance;
 
 const DEFAULT_ALIBABA_URL = isApp ? ALIBABA_BASE_URL : ApiPath.Alibaba;
@@ -47,17 +42,11 @@ const DEFAULT_MOONSHOT_URL = isApp ? MOONSHOT_BASE_URL : ApiPath.Moonshot;
 
 const DEFAULT_STABILITY_URL = isApp ? STABILITY_BASE_URL : ApiPath.Stability;
 
-const DEFAULT_IFLYTEK_URL = isApp ? IFLYTEK_BASE_URL : ApiPath.Iflytek;
-
 const DEFAULT_DEEPSEEK_URL = isApp ? DEEPSEEK_BASE_URL : ApiPath.DeepSeek;
 
 const DEFAULT_XAI_URL = isApp ? XAI_BASE_URL : ApiPath.XAI;
 
 const DEFAULT_CHATGLM_URL = isApp ? CHATGLM_BASE_URL : ApiPath.ChatGLM;
-
-const DEFAULT_SILICONFLOW_URL = isApp
-  ? SILICONFLOW_BASE_URL
-  : ApiPath.SiliconFlow;
 
 const DEFAULT_ACCESS_STATE = {
   accessCode: "",
@@ -69,11 +58,6 @@ const DEFAULT_ACCESS_STATE = {
   openaiUrl: DEFAULT_OPENAI_URL,
   openaiApiKey: "",
 
-  // azure
-  azureUrl: "",
-  azureApiKey: "",
-  azureApiVersion: "2023-08-01-preview",
-
   // google ai studio
   googleUrl: DEFAULT_GOOGLE_URL,
   googleApiKey: "",
@@ -84,11 +68,6 @@ const DEFAULT_ACCESS_STATE = {
   anthropicUrl: DEFAULT_ANTHROPIC_URL,
   anthropicApiKey: "",
   anthropicApiVersion: "2023-06-01",
-
-  // baidu
-  baiduUrl: DEFAULT_BAIDU_URL,
-  baiduApiKey: "",
-  baiduSecretKey: "",
 
   // bytedance
   bytedanceUrl: DEFAULT_BYTEDANCE_URL,
@@ -111,11 +90,6 @@ const DEFAULT_ACCESS_STATE = {
   tencentSecretKey: "",
   tencentSecretId: "",
 
-  // iflytek
-  iflytekUrl: DEFAULT_IFLYTEK_URL,
-  iflytekApiKey: "",
-  iflytekApiSecret: "",
-
   // deepseek
   deepseekUrl: DEFAULT_DEEPSEEK_URL,
   deepseekApiKey: "",
@@ -128,10 +102,6 @@ const DEFAULT_ACCESS_STATE = {
   chatglmUrl: DEFAULT_CHATGLM_URL,
   chatglmApiKey: "",
 
-  // siliconflow
-  siliconflowUrl: DEFAULT_SILICONFLOW_URL,
-  siliconflowApiKey: "",
-
   // server config
   needCode: true,
   hideUserApiKey: false,
@@ -142,6 +112,8 @@ const DEFAULT_ACCESS_STATE = {
   defaultModel: "",
   visionModels: "",
 };
+
+const REMOVED_PROVIDERS = ["Azure", "Baidu", "Iflytek", "SiliconFlow"];
 
 export const useAccessStore = createPersistStore(
   { ...DEFAULT_ACCESS_STATE },
@@ -161,20 +133,12 @@ export const useAccessStore = createPersistStore(
       return ensure(get(), ["openaiApiKey"]);
     },
 
-    isValidAzure() {
-      return ensure(get(), ["azureUrl", "azureApiKey", "azureApiVersion"]);
-    },
-
     isValidGoogle() {
       return ensure(get(), ["googleApiKey"]);
     },
 
     isValidAnthropic() {
       return ensure(get(), ["anthropicApiKey"]);
-    },
-
-    isValidBaidu() {
-      return ensure(get(), ["baiduApiKey", "baiduSecretKey"]);
     },
 
     isValidByteDance() {
@@ -192,9 +156,6 @@ export const useAccessStore = createPersistStore(
     isValidMoonshot() {
       return ensure(get(), ["moonshotApiKey"]);
     },
-    isValidIflytek() {
-      return ensure(get(), ["iflytekApiKey"]);
-    },
     isValidDeepSeek() {
       return ensure(get(), ["deepseekApiKey"]);
     },
@@ -207,29 +168,21 @@ export const useAccessStore = createPersistStore(
       return ensure(get(), ["chatglmApiKey"]);
     },
 
-    isValidSiliconFlow() {
-      return ensure(get(), ["siliconflowApiKey"]);
-    },
-
     isAuthorized() {
       this.fetch();
 
       // has token or has code or disabled access control
       return (
         this.isValidOpenAI() ||
-        this.isValidAzure() ||
         this.isValidGoogle() ||
         this.isValidAnthropic() ||
-        this.isValidBaidu() ||
         this.isValidByteDance() ||
         this.isValidAlibaba() ||
         this.isValidTencent() ||
         this.isValidMoonshot() ||
-        this.isValidIflytek() ||
         this.isValidDeepSeek() ||
         this.isValidXAI() ||
         this.isValidChatGLM() ||
-        this.isValidSiliconFlow() ||
         !this.enabledAccessControl() ||
         (this.enabledAccessControl() && ensure(get(), ["accessCode"]))
       );
@@ -269,17 +222,21 @@ export const useAccessStore = createPersistStore(
   }),
   {
     name: StoreKey.Access,
-    version: 2,
+    version: 3,
     migrate(persistedState, version) {
       if (version < 2) {
         const state = persistedState as {
           token: string;
           openaiApiKey: string;
-          azureApiVersion: string;
           googleApiKey: string;
         };
         state.openaiApiKey = state.token;
-        state.azureApiVersion = "2023-08-01-preview";
+      }
+      if (version < 3) {
+        const state = persistedState as typeof DEFAULT_ACCESS_STATE;
+        if (REMOVED_PROVIDERS.includes(state.provider as any)) {
+          state.provider = ServiceProvider.OpenAI;
+        }
       }
 
       return persistedState as any;

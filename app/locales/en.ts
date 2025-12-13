@@ -315,11 +315,11 @@ const en: LocaleType = {
       },
       CustomEndpoint: {
         Title: "Custom Endpoint",
-        SubTitle: "Use custom Azure or OpenAI service",
+        SubTitle: "Use custom OpenAI service",
       },
       Provider: {
         Title: "Model Provider",
-        SubTitle: "Select Azure or OpenAI",
+        SubTitle: "Select a provider",
       },
       OpenAI: {
         ApiKey: {
@@ -331,23 +331,6 @@ const en: LocaleType = {
         Endpoint: {
           Title: "OpenAI Endpoint",
           SubTitle: "Must start with http(s):// or use /api/openai as default",
-        },
-      },
-      Azure: {
-        ApiKey: {
-          Title: "Azure Api Key",
-          SubTitle: "Check your api key from Azure console",
-          Placeholder: "Azure Api Key",
-        },
-
-        Endpoint: {
-          Title: "Azure Endpoint",
-          SubTitle: "Example: ",
-        },
-
-        ApiVerion: {
-          Title: "Azure Api Version",
-          SubTitle: "Check your api version from azure console",
         },
       },
       Anthropic: {
@@ -366,22 +349,6 @@ const en: LocaleType = {
         ApiVerion: {
           Title: "API Version (claude api version)",
           SubTitle: "Select and input a specific API version",
-        },
-      },
-      Baidu: {
-        ApiKey: {
-          Title: "Baidu API Key",
-          SubTitle: "Use a custom Baidu API Key",
-          Placeholder: "Baidu API Key",
-        },
-        SecretKey: {
-          Title: "Baidu Secret Key",
-          SubTitle: "Use a custom Baidu Secret Key",
-          Placeholder: "Baidu Secret Key",
-        },
-        Endpoint: {
-          Title: "Endpoint Address",
-          SubTitle: "not supported, configure in .env",
         },
       },
       Tencent: {
@@ -466,38 +433,11 @@ const en: LocaleType = {
           SubTitle: "Example: ",
         },
       },
-      SiliconFlow: {
-        ApiKey: {
-          Title: "SiliconFlow API Key",
-          SubTitle: "Use a custom SiliconFlow API Key",
-          Placeholder: "SiliconFlow API Key",
-        },
-        Endpoint: {
-          Title: "Endpoint Address",
-          SubTitle: "Example: ",
-        },
-      },
       Stability: {
         ApiKey: {
           Title: "Stability API Key",
           SubTitle: "Use a custom Stability API Key",
           Placeholder: "Stability API Key",
-        },
-        Endpoint: {
-          Title: "Endpoint Address",
-          SubTitle: "Example: ",
-        },
-      },
-      Iflytek: {
-        ApiKey: {
-          Title: "Iflytek API Key",
-          SubTitle: "Use a Iflytek API Key",
-          Placeholder: "Iflytek API Key",
-        },
-        ApiSecret: {
-          Title: "Iflytek API Secret",
-          SubTitle: "Use a Iflytek API Secret",
-          Placeholder: "Iflytek API Secret",
         },
         Endpoint: {
           Title: "Endpoint Address",
@@ -578,39 +518,6 @@ const en: LocaleType = {
         SubTitle: "The speed of the generated audio",
       },
       Engine: "TTS Engine",
-    },
-    Realtime: {
-      Enable: {
-        Title: "Realtime Chat",
-        SubTitle: "Enable realtime chat feature",
-      },
-      Provider: {
-        Title: "Model Provider",
-        SubTitle: "Switch between different providers",
-      },
-      Model: {
-        Title: "Model",
-        SubTitle: "Select a model",
-      },
-      ApiKey: {
-        Title: "API Key",
-        SubTitle: "API Key",
-        Placeholder: "API Key",
-      },
-      Azure: {
-        Endpoint: {
-          Title: "Endpoint",
-          SubTitle: "Endpoint",
-        },
-        Deployment: {
-          Title: "Deployment Name",
-          SubTitle: "Deployment Name",
-        },
-      },
-      Temperature: {
-        Title: "Randomness (temperature)",
-        SubTitle: "Higher values result in more random responses",
-      },
     },
   },
   Store: {

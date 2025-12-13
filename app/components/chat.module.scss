@@ -735,18 +735,4 @@
     flex: 1;
     width: 100%;
   }
-
-  .chat-side-panel {
-    position: absolute;
-    inset: 0;
-    background: var(--white);
-    overflow: hidden;
-    z-index: 10;
-    transform: translateX(100%);
-    transition: all ease 0.3s;
-
-    &-show {
-      transform: translateX(0);
-    }
-  }
 }

@@ -51,8 +51,6 @@ import { copyToClipboard, clientUpdate, semverCompare } from "../utils";
 import Link from "next/link";
 import {
   Anthropic,
-  Azure,
-  Baidu,
   Tencent,
   ByteDance,
   Alibaba,
@@ -68,10 +66,8 @@ import {
   SlotID,
   UPDATE_URL,
   Stability,
-  Iflytek,
   ChatGLM,
   DeepSeek,
-  SiliconFlow,
 } from "../constant";
 import { SearchService, usePromptStore } from "../store/prompt";
 import { ErrorBoundary } from "./error";
@@ -83,7 +79,6 @@ import { useSyncStore } from "../store/sync";
 import { nanoid } from "nanoid";
 import { useMaskStore } from "../store/mask";
 import { ProviderType } from "../utils/cloud";
-import { RealtimeConfigList } from "./realtime-chat/realtime-config";
 
 function EditPromptModal(props: { id: string; onClose: () => void }) {
   const promptStore = usePromptStore();
@@ -599,16 +594,8 @@ export function Settings() {
   const shouldHideBalanceQuery = useMemo(() => {
     const isOpenAiUrl = accessStore.openaiUrl.includes(OPENAI_BASE_URL);
 
-    return (
-      accessStore.hideBalanceQuery ||
-      isOpenAiUrl ||
-      accessStore.provider === ServiceProvider.Azure
-    );
-  }, [
-    accessStore.hideBalanceQuery,
-    accessStore.openaiUrl,
-    accessStore.provider,
-  ]);
+    return accessStore.hideBalanceQuery || isOpenAiUrl;
+  }, [accessStore.hideBalanceQuery, accessStore.openaiUrl]);
 
   const usage = {
     used: updateStore.used,
@@ -739,62 +726,6 @@ export function Settings() {
             );
           }}
         />
-      </ListItem>
-    </>
-  );
-
-  const azureConfigComponent = accessStore.provider ===
-    ServiceProvider.Azure && (
-    <>
-      <ListItem
-        title={Locale.Settings.Access.Azure.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.Azure.Endpoint.SubTitle + Azure.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.Azure.Endpoint.Title}
-          type="text"
-          value={accessStore.azureUrl}
-          placeholder={Azure.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.azureUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
-        title={Locale.Settings.Access.Azure.ApiKey.Title}
-        subTitle={Locale.Settings.Access.Azure.ApiKey.SubTitle}
-      >
-        <PasswordInput
-          aria-label={Locale.Settings.Access.Azure.ApiKey.Title}
-          value={accessStore.azureApiKey}
-          type="text"
-          placeholder={Locale.Settings.Access.Azure.ApiKey.Placeholder}
-          onChange={(e) => {
-            accessStore.update(
-              (access) => (access.azureApiKey = e.currentTarget.value),
-            );
-          }}
-        />
-      </ListItem>
-      <ListItem
-        title={Locale.Settings.Access.Azure.ApiVerion.Title}
-        subTitle={Locale.Settings.Access.Azure.ApiVerion.SubTitle}
-      >
-        <input
-          aria-label={Locale.Settings.Access.Azure.ApiVerion.Title}
-          type="text"
-          value={accessStore.azureApiVersion}
-          placeholder="2023-08-01-preview"
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.azureApiVersion = e.currentTarget.value),
-            )
-          }
-        ></input>
       </ListItem>
     </>
   );
@@ -931,60 +862,6 @@ export function Settings() {
             )
           }
         ></input>
-      </ListItem>
-    </>
-  );
-
-  const baiduConfigComponent = accessStore.provider ===
-    ServiceProvider.Baidu && (
-    <>
-      <ListItem
-        title={Locale.Settings.Access.Baidu.Endpoint.Title}
-        subTitle={Locale.Settings.Access.Baidu.Endpoint.SubTitle}
-      >
-        <input
-          aria-label={Locale.Settings.Access.Baidu.Endpoint.Title}
-          type="text"
-          value={accessStore.baiduUrl}
-          placeholder={Baidu.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.baiduUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
-        title={Locale.Settings.Access.Baidu.ApiKey.Title}
-        subTitle={Locale.Settings.Access.Baidu.ApiKey.SubTitle}
-      >
-        <PasswordInput
-          aria-label={Locale.Settings.Access.Baidu.ApiKey.Title}
-          value={accessStore.baiduApiKey}
-          type="text"
-          placeholder={Locale.Settings.Access.Baidu.ApiKey.Placeholder}
-          onChange={(e) => {
-            accessStore.update(
-              (access) => (access.baiduApiKey = e.currentTarget.value),
-            );
-          }}
-        />
-      </ListItem>
-      <ListItem
-        title={Locale.Settings.Access.Baidu.SecretKey.Title}
-        subTitle={Locale.Settings.Access.Baidu.SecretKey.SubTitle}
-      >
-        <PasswordInput
-          aria-label={Locale.Settings.Access.Baidu.SecretKey.Title}
-          value={accessStore.baiduSecretKey}
-          type="text"
-          placeholder={Locale.Settings.Access.Baidu.SecretKey.Placeholder}
-          onChange={(e) => {
-            accessStore.update(
-              (access) => (access.baiduSecretKey = e.currentTarget.value),
-            );
-          }}
-        />
       </ListItem>
     </>
   );
@@ -1286,47 +1163,6 @@ export function Settings() {
       </ListItem>
     </>
   );
-  const siliconflowConfigComponent = accessStore.provider ===
-    ServiceProvider.SiliconFlow && (
-    <>
-      <ListItem
-        title={Locale.Settings.Access.SiliconFlow.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.SiliconFlow.Endpoint.SubTitle +
-          SiliconFlow.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.SiliconFlow.Endpoint.Title}
-          type="text"
-          value={accessStore.siliconflowUrl}
-          placeholder={SiliconFlow.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.siliconflowUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
-        title={Locale.Settings.Access.SiliconFlow.ApiKey.Title}
-        subTitle={Locale.Settings.Access.SiliconFlow.ApiKey.SubTitle}
-      >
-        <PasswordInput
-          aria-label={Locale.Settings.Access.SiliconFlow.ApiKey.Title}
-          value={accessStore.siliconflowApiKey}
-          type="text"
-          placeholder={Locale.Settings.Access.SiliconFlow.ApiKey.Placeholder}
-          onChange={(e) => {
-            accessStore.update(
-              (access) => (access.siliconflowApiKey = e.currentTarget.value),
-            );
-          }}
-        />
-      </ListItem>
-    </>
-  );
-
   const stabilityConfigComponent = accessStore.provider ===
     ServiceProvider.Stability && (
     <>
@@ -1361,63 +1197,6 @@ export function Settings() {
           onChange={(e) => {
             accessStore.update(
               (access) => (access.stabilityApiKey = e.currentTarget.value),
-            );
-          }}
-        />
-      </ListItem>
-    </>
-  );
-  const lflytekConfigComponent = accessStore.provider ===
-    ServiceProvider.Iflytek && (
-    <>
-      <ListItem
-        title={Locale.Settings.Access.Iflytek.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.Iflytek.Endpoint.SubTitle +
-          Iflytek.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.Iflytek.Endpoint.Title}
-          type="text"
-          value={accessStore.iflytekUrl}
-          placeholder={Iflytek.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.iflytekUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
-        title={Locale.Settings.Access.Iflytek.ApiKey.Title}
-        subTitle={Locale.Settings.Access.Iflytek.ApiKey.SubTitle}
-      >
-        <PasswordInput
-          aria-label={Locale.Settings.Access.Iflytek.ApiKey.Title}
-          value={accessStore.iflytekApiKey}
-          type="text"
-          placeholder={Locale.Settings.Access.Iflytek.ApiKey.Placeholder}
-          onChange={(e) => {
-            accessStore.update(
-              (access) => (access.iflytekApiKey = e.currentTarget.value),
-            );
-          }}
-        />
-      </ListItem>
-
-      <ListItem
-        title={Locale.Settings.Access.Iflytek.ApiSecret.Title}
-        subTitle={Locale.Settings.Access.Iflytek.ApiSecret.SubTitle}
-      >
-        <PasswordInput
-          aria-label={Locale.Settings.Access.Iflytek.ApiSecret.Title}
-          value={accessStore.iflytekApiSecret}
-          type="text"
-          placeholder={Locale.Settings.Access.Iflytek.ApiSecret.Placeholder}
-          onChange={(e) => {
-            accessStore.update(
-              (access) => (access.iflytekApiSecret = e.currentTarget.value),
             );
           }}
         />
@@ -1775,20 +1554,16 @@ export function Settings() {
                   </ListItem>
 
                   {openAIConfigComponent}
-                  {azureConfigComponent}
                   {googleConfigComponent}
                   {anthropicConfigComponent}
-                  {baiduConfigComponent}
                   {byteDanceConfigComponent}
                   {alibabaConfigComponent}
                   {tencentConfigComponent}
                   {moonshotConfigComponent}
                   {deepseekConfigComponent}
                   {stabilityConfigComponent}
-                  {lflytekConfigComponent}
                   {XAIConfigComponent}
                   {chatglmConfigComponent}
-                  {siliconflowConfigComponent}
                 </>
               )}
             </>
@@ -1854,29 +1629,6 @@ export function Settings() {
         {shouldShowPromptModal && (
           <UserPromptModal onClose={() => setShowPromptModal(false)} />
         )}
-        <List>
-          <RealtimeConfigList
-            realtimeConfig={config.realtimeConfig}
-            updateConfig={(updater) => {
-              const realtimeConfig = { ...config.realtimeConfig };
-              updater(realtimeConfig);
-              config.update(
-                (config) => (config.realtimeConfig = realtimeConfig),
-              );
-            }}
-          />
-        </List>
-        {/* <List>
-          <TTSConfigList
-            ttsConfig={config.ttsConfig}
-            updateConfig={(updater) => {
-              const ttsConfig = { ...config.ttsConfig };
-              updater(ttsConfig);
-              config.update((config) => (config.ttsConfig = ttsConfig));
-            }}
-          />
-        </List> */}
-
         <DangerItems />
       </div>
     </ErrorBoundary>

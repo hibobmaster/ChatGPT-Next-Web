@@ -312,7 +312,7 @@ const cn = {
       },
       CustomEndpoint: {
         Title: "自定义接口",
-        SubTitle: "是否使用自定义 Azure 或 OpenAI 服务",
+        SubTitle: "是否使用自定义 OpenAI 服务",
       },
       Provider: {
         Title: "模型服务商",
@@ -328,23 +328,6 @@ const cn = {
         Endpoint: {
           Title: "接口地址",
           SubTitle: "除默认地址外，必须包含 http(s)://",
-        },
-      },
-      Azure: {
-        ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义 Azure Key 绕过密码访问限制",
-          Placeholder: "Azure API Key",
-        },
-
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-
-        ApiVerion: {
-          Title: "接口版本 (azure api version)",
-          SubTitle: "选择指定的部分版本",
         },
       },
       Anthropic: {
@@ -383,22 +366,6 @@ const cn = {
         GoogleSafetySettings: {
           Title: "Google 安全过滤级别",
           SubTitle: "设置内容过滤级别",
-        },
-      },
-      Baidu: {
-        ApiKey: {
-          Title: "API Key",
-          SubTitle: "使用自定义 Baidu API Key",
-          Placeholder: "Baidu API Key",
-        },
-        SecretKey: {
-          Title: "Secret Key",
-          SubTitle: "使用自定义 Baidu Secret Key",
-          Placeholder: "Baidu Secret Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "不支持自定义前往.env配置",
         },
       },
       Tencent: {
@@ -483,38 +450,11 @@ const cn = {
           SubTitle: "样例：",
         },
       },
-      SiliconFlow: {
-        ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义硅基流动 API Key",
-          Placeholder: "硅基流动 API Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-      },
       Stability: {
         ApiKey: {
           Title: "接口密钥",
           SubTitle: "使用自定义 Stability API Key",
           Placeholder: "Stability API Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-      },
-      Iflytek: {
-        ApiKey: {
-          Title: "ApiKey",
-          SubTitle: "从讯飞星火控制台获取的 APIKey",
-          Placeholder: "APIKey",
-        },
-        ApiSecret: {
-          Title: "ApiSecret",
-          SubTitle: "从讯飞星火控制台获取的 APISecret",
-          Placeholder: "APISecret",
         },
         Endpoint: {
           Title: "接口地址",
@@ -570,39 +510,6 @@ const cn = {
       Speed: {
         Title: "速度",
         SubTitle: "生成语音的速度",
-      },
-    },
-    Realtime: {
-      Enable: {
-        Title: "实时聊天",
-        SubTitle: "开启实时聊天功能",
-      },
-      Provider: {
-        Title: "模型服务商",
-        SubTitle: "切换不同的服务商",
-      },
-      Model: {
-        Title: "模型",
-        SubTitle: "选择一个模型",
-      },
-      ApiKey: {
-        Title: "API Key",
-        SubTitle: "API Key",
-        Placeholder: "API Key",
-      },
-      Azure: {
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "接口地址",
-        },
-        Deployment: {
-          Title: "部署名称",
-          SubTitle: "部署名称",
-        },
-      },
-      Temperature: {
-        Title: "随机性 (temperature)",
-        SubTitle: "值越大，回复越随机",
       },
     },
   },
