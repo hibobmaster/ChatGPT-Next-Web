@@ -1,4 +1,5 @@
 import { ServiceProvider } from "@/app/constant";
+import { ChangeEvent, useEffect, useRef } from "react";
 import { ModalConfigValidator, ModelConfig } from "../store";
 
 import Locale from "../locales";
@@ -19,7 +20,35 @@ export function ModelConfigList(props: {
     "provider.providerName",
   );
   const value = `${props.modelConfig.model}@${props.modelConfig?.providerName}`;
-  const compressModelValue = `${props.modelConfig.compressModel}@${props.modelConfig?.compressProviderName}`;
+  const previousModelValueRef = useRef(value);
+  useEffect(() => {
+    previousModelValueRef.current = value;
+  }, [value]);
+  const hasCompressModel =
+    props.modelConfig.compressModel && props.modelConfig.compressProviderName;
+  const compressModelValue = hasCompressModel
+    ? `${props.modelConfig.compressModel}@${props.modelConfig.compressProviderName}`
+    : value;
+  const handleModelChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const [model, providerName] = getModelProvider(e.currentTarget.value);
+    const previousModelValue = previousModelValueRef.current;
+    const previousCompressValue = hasCompressModel
+      ? `${props.modelConfig.compressModel}@${props.modelConfig.compressProviderName}`
+      : "";
+    const shouldSync =
+      !hasCompressModel || previousCompressValue === previousModelValue;
+
+    props.updateConfig((config) => {
+      const validatedModel = ModalConfigValidator.model(model);
+      const validatedProvider = providerName as ServiceProvider;
+      config.model = validatedModel;
+      config.providerName = validatedProvider;
+      if (shouldSync) {
+        config.compressModel = validatedModel;
+        config.compressProviderName = validatedProvider;
+      }
+    });
+  };
 
   return (
     <>
@@ -28,15 +57,7 @@ export function ModelConfigList(props: {
           aria-label={Locale.Settings.Model}
           value={value}
           align="left"
-          onChange={(e) => {
-            const [model, providerName] = getModelProvider(
-              e.currentTarget.value,
-            );
-            props.updateConfig((config) => {
-              config.model = ModalConfigValidator.model(model);
-              config.providerName = providerName as ServiceProvider;
-            });
-          }}
+          onChange={handleModelChange}
         >
           {Object.keys(groupModels).map((providerName, index) => (
             <optgroup label={providerName} key={index}>

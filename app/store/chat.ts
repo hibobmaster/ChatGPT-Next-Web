@@ -840,7 +840,7 @@ export const useChatStore = createPersistStore(
   },
   {
     name: StoreKey.Chat,
-    version: 3.4,
+    version: 3.5,
     migrate(persistedState, version) {
       const state = persistedState as any;
       const newState = JSON.parse(
@@ -919,6 +919,16 @@ export const useChatStore = createPersistStore(
           ) {
             s.mask.modelConfig.providerName = ServiceProvider.DeepSeek;
             s.mask.modelConfig.model = "deepseek-chat";
+          }
+        });
+      }
+
+      if (version < 3.5) {
+        newState.sessions.forEach((s) => {
+          if (!s.mask.modelConfig.compressModel) {
+            s.mask.modelConfig.compressModel = s.mask.modelConfig.model;
+            s.mask.modelConfig.compressProviderName =
+              s.mask.modelConfig.providerName;
           }
         });
       }

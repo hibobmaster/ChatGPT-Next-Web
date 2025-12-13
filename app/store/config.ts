@@ -68,8 +68,8 @@ export const DEFAULT_CONFIG = {
     sendMemory: true,
     historyMessageCount: 4,
     compressMessageLengthThreshold: 1000,
-    compressModel: "",
-    compressProviderName: "",
+    compressModel: "deepseek-chat" as ModelType,
+    compressProviderName: ServiceProvider.DeepSeek as ServiceProvider,
     enableInjectSystemPrompts: true,
     template: config?.template ?? DEFAULT_INPUT_TEMPLATE,
     size: "1024x1024" as ModelSize,
@@ -150,7 +150,7 @@ export const useAppConfig = createPersistStore(
   }),
   {
     name: StoreKey.Config,
-    version: 4.3,
+    version: 4.4,
 
     merge(persistedState, currentState) {
       const state = persistedState as ChatConfig | undefined;
@@ -242,6 +242,14 @@ export const useAppConfig = createPersistStore(
       }
       if (version < 4.3) {
         state.customModels = "";
+      }
+
+      if (version < 4.4) {
+        if (!state.modelConfig.compressModel) {
+          state.modelConfig.compressModel = state.modelConfig.model;
+          state.modelConfig.compressProviderName =
+            state.modelConfig.providerName;
+        }
       }
 
       return state as any;
