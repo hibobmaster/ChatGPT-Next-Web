@@ -9,7 +9,12 @@ import { getServerSideConfig } from "./config/server";
 
 export const metadata: Metadata = {
   title: "QuanQuanChat",
-  description: "Your personal ChatGPT Chat Bot.",
+  description: "由quanquan.space提供的公益GPT服务",
+  icons: {
+    icon: "/quanquan.png",
+    shortcut: "/quanquan.png",
+    apple: "/quanquan.png",
+  },
   appleWebApp: {
     title: "QuanQuanChat",
     statusBarStyle: "default",

@@ -2,14 +2,15 @@ import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 import styles from "./home.module.scss";
 
+import Image from "next/image";
 import { IconButton } from "./button";
 import SettingsIcon from "../icons/settings.svg";
 import GithubIcon from "../icons/github.svg";
-import ChatGptIcon from "../icons/chatgpt.svg";
 import AddIcon from "../icons/add.svg";
 import DeleteIcon from "../icons/delete.svg";
 import McpIcon from "../icons/mcp.svg";
 import DragIcon from "../icons/drag.svg";
+import QuanquanLogo from "../../assets/quanquan.png";
 
 import Locale from "../locales";
 
@@ -240,7 +241,16 @@ export function SideBar(props: { className?: string }) {
       <SideBarHeader
         title="QuanQuanChat"
         subTitle="由quanqquan.space提供的公益GPT服務"
-        logo={<ChatGptIcon />}
+        logo={
+          <Image
+            src={QuanquanLogo}
+            alt="QuanQuanChat logo"
+            width={32}
+            height={32}
+            className={styles["sidebar-logo-image"]}
+            priority
+          />
+        }
         shouldNarrow={shouldNarrow}
       >
         <div className={styles["sidebar-header-bar"]}>
