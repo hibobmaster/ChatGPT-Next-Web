@@ -7,7 +7,6 @@ import {
   REQUEST_TIMEOUT_MS,
 } from "@/app/constant";
 import {
-  useAccessStore,
   useAppConfig,
   useChatStore,
   ChatMessageTool,
@@ -30,19 +29,9 @@ export class MoonshotApi implements LLMApi {
   private disableListModels = true;
 
   path(path: string): string {
-    const accessStore = useAccessStore.getState();
-
-    let baseUrl = "";
-
-    if (accessStore.useCustomConfig) {
-      baseUrl = accessStore.moonshotUrl;
-    }
-
-    if (baseUrl.length === 0) {
-      const isApp = !!getClientConfig()?.isApp;
-      const apiPath = ApiPath.Moonshot;
-      baseUrl = isApp ? MOONSHOT_BASE_URL : apiPath;
-    }
+    const isApp = !!getClientConfig()?.isApp;
+    const apiPath = ApiPath.Moonshot;
+    let baseUrl = isApp ? MOONSHOT_BASE_URL : apiPath;
 
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, baseUrl.length - 1);

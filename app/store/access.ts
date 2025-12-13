@@ -222,7 +222,7 @@ export const useAccessStore = createPersistStore(
   }),
   {
     name: StoreKey.Access,
-    version: 3,
+    version: 4,
     migrate(persistedState, version) {
       if (version < 2) {
         const state = persistedState as {
@@ -237,6 +237,21 @@ export const useAccessStore = createPersistStore(
         if (REMOVED_PROVIDERS.includes(state.provider as any)) {
           state.provider = ServiceProvider.OpenAI;
         }
+      }
+      if (version < 4) {
+        const state = persistedState as typeof DEFAULT_ACCESS_STATE;
+        state.useCustomConfig = false;
+        state.openaiUrl = DEFAULT_OPENAI_URL;
+        state.googleUrl = DEFAULT_GOOGLE_URL;
+        state.anthropicUrl = DEFAULT_ANTHROPIC_URL;
+        state.bytedanceUrl = DEFAULT_BYTEDANCE_URL;
+        state.alibabaUrl = DEFAULT_ALIBABA_URL;
+        state.tencentUrl = DEFAULT_TENCENT_URL;
+        state.moonshotUrl = DEFAULT_MOONSHOT_URL;
+        state.stabilityUrl = DEFAULT_STABILITY_URL;
+        state.deepseekUrl = DEFAULT_DEEPSEEK_URL;
+        state.xaiUrl = DEFAULT_XAI_URL;
+        state.chatglmUrl = DEFAULT_CHATGLM_URL;
       }
 
       return persistedState as any;

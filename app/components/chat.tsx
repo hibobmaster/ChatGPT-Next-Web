@@ -1141,12 +1141,7 @@ function ChatSession() {
       session.mask.context.push(message),
     );
 
-    showToast(Locale.Chat.Actions.PinToastContent, {
-      text: Locale.Chat.Actions.PinToastAction,
-      onClick: () => {
-        setShowPromptModal(true);
-      },
-    });
+    showToast(Locale.Chat.Actions.PinToastContent);
   };
 
   const accessStore = useAccessStore();
@@ -1280,12 +1275,11 @@ function ChatSession() {
       try {
         const payload = JSON.parse(text) as {
           key?: string;
-          url?: string;
         };
 
         console.log("[Command] got settings from url: ", payload);
 
-        if (payload.key || payload.url) {
+        if (payload.key) {
           showConfirm(
             Locale.URLCommand.Settings +
               `\n${JSON.stringify(payload, null, 4)}`,
@@ -1296,10 +1290,6 @@ function ChatSession() {
                 (access) => (access.openaiApiKey = payload.key!),
               );
             }
-            if (payload.url) {
-              accessStore.update((access) => (access.openaiUrl = payload.url!));
-            }
-            accessStore.update((access) => (access.useCustomConfig = true));
           });
         }
       } catch {

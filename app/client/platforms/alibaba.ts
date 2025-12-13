@@ -1,7 +1,6 @@
 "use client";
 import { ApiPath, Alibaba, ALIBABA_BASE_URL } from "@/app/constant";
 import {
-  useAccessStore,
   useAppConfig,
   useChatStore,
   ChatMessageTool,
@@ -55,18 +54,8 @@ interface RequestPayload {
 
 export class QwenApi implements LLMApi {
   path(path: string): string {
-    const accessStore = useAccessStore.getState();
-
-    let baseUrl = "";
-
-    if (accessStore.useCustomConfig) {
-      baseUrl = accessStore.alibabaUrl;
-    }
-
-    if (baseUrl.length === 0) {
-      const isApp = !!getClientConfig()?.isApp;
-      baseUrl = isApp ? ALIBABA_BASE_URL : ApiPath.Alibaba;
-    }
+    const isApp = !!getClientConfig()?.isApp;
+    let baseUrl = isApp ? ALIBABA_BASE_URL : ApiPath.Alibaba;
 
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, baseUrl.length - 1);

@@ -378,20 +378,8 @@ export class ClaudeApi implements LLMApi {
     ];
   }
   path(path: string): string {
-    const accessStore = useAccessStore.getState();
-
-    let baseUrl: string = "";
-
-    if (accessStore.useCustomConfig) {
-      baseUrl = accessStore.anthropicUrl;
-    }
-
-    // if endpoint is empty, use default endpoint
-    if (baseUrl.trim().length === 0) {
-      const isApp = !!getClientConfig()?.isApp;
-
-      baseUrl = isApp ? ANTHROPIC_BASE_URL : ApiPath.Anthropic;
-    }
+    const isApp = !!getClientConfig()?.isApp;
+    let baseUrl: string = isApp ? ANTHROPIC_BASE_URL : ApiPath.Anthropic;
 
     if (!baseUrl.startsWith("http") && !baseUrl.startsWith("/api")) {
       baseUrl = "https://" + baseUrl;

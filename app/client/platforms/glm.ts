@@ -1,7 +1,6 @@
 "use client";
 import { ApiPath, CHATGLM_BASE_URL, ChatGLM } from "@/app/constant";
 import {
-  useAccessStore,
   useAppConfig,
   useChatStore,
   ChatMessageTool,
@@ -121,18 +120,9 @@ export class ChatGLMApi implements LLMApi {
   }
 
   path(path: string): string {
-    const accessStore = useAccessStore.getState();
-    let baseUrl = "";
-
-    if (accessStore.useCustomConfig) {
-      baseUrl = accessStore.chatglmUrl;
-    }
-
-    if (baseUrl.length === 0) {
-      const isApp = !!getClientConfig()?.isApp;
-      const apiPath = ApiPath.ChatGLM;
-      baseUrl = isApp ? CHATGLM_BASE_URL : apiPath;
-    }
+    const isApp = !!getClientConfig()?.isApp;
+    const apiPath = ApiPath.ChatGLM;
+    let baseUrl = isApp ? CHATGLM_BASE_URL : apiPath;
 
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, baseUrl.length - 1);

@@ -1,7 +1,6 @@
 "use client";
 import { ApiPath, ByteDance, BYTEDANCE_BASE_URL } from "@/app/constant";
 import {
-  useAccessStore,
   useAppConfig,
   useChatStore,
   ChatMessageTool,
@@ -51,18 +50,8 @@ interface RequestPayloadForByteDance {
 
 export class DoubaoApi implements LLMApi {
   path(path: string): string {
-    const accessStore = useAccessStore.getState();
-
-    let baseUrl = "";
-
-    if (accessStore.useCustomConfig) {
-      baseUrl = accessStore.bytedanceUrl;
-    }
-
-    if (baseUrl.length === 0) {
-      const isApp = !!getClientConfig()?.isApp;
-      baseUrl = isApp ? BYTEDANCE_BASE_URL : ApiPath.ByteDance;
-    }
+    const isApp = !!getClientConfig()?.isApp;
+    let baseUrl = isApp ? BYTEDANCE_BASE_URL : ApiPath.ByteDance;
 
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, baseUrl.length - 1);

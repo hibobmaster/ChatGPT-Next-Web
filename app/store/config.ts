@@ -147,7 +147,7 @@ export const useAppConfig = createPersistStore(
   }),
   {
     name: StoreKey.Config,
-    version: 4.2,
+    version: 4.3,
 
     merge(persistedState, currentState) {
       const state = persistedState as ChatConfig | undefined;
@@ -234,6 +234,9 @@ export const useAppConfig = createPersistStore(
         ) {
           state.modelConfig.providerName = ServiceProvider.OpenAI;
         }
+      }
+      if (version < 4.3) {
+        state.customModels = "";
       }
 
       return state as any;

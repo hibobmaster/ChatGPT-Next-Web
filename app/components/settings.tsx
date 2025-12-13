@@ -50,21 +50,12 @@ import Locale, {
 import { copyToClipboard } from "../utils";
 import {
   Anthropic,
-  Tencent,
-  ByteDance,
-  Alibaba,
-  Moonshot,
-  XAI,
-  Google,
   GoogleSafetySettingsThreshold,
   OPENAI_BASE_URL,
   Path,
   STORAGE_KEY,
   ServiceProvider,
   SlotID,
-  Stability,
-  ChatGLM,
-  DeepSeek,
 } from "../constant";
 import { SearchService, usePromptStore } from "../store/prompt";
 import { ErrorBoundary } from "./error";
@@ -615,12 +606,6 @@ export function Settings() {
         navigate(Path.Home);
       }
     };
-    if (clientConfig?.isApp) {
-      // Force to set custom endpoint to true if it's app
-      accessStore.update((state) => {
-        state.useCustomConfig = true;
-      });
-    }
     document.addEventListener("keydown", keydownEvent);
     return () => {
       document.removeEventListener("keydown", keydownEvent);
@@ -649,44 +634,9 @@ export function Settings() {
     </ListItem>
   );
 
-  const useCustomConfigComponent = // Conditionally render the following ListItem based on clientConfig.isApp
-    !clientConfig?.isApp && ( // only show if isApp is false
-      <ListItem
-        title={Locale.Settings.Access.CustomEndpoint.Title}
-        subTitle={Locale.Settings.Access.CustomEndpoint.SubTitle}
-      >
-        <input
-          aria-label={Locale.Settings.Access.CustomEndpoint.Title}
-          type="checkbox"
-          checked={accessStore.useCustomConfig}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.useCustomConfig = e.currentTarget.checked),
-            )
-          }
-        ></input>
-      </ListItem>
-    );
-
   const openAIConfigComponent = accessStore.provider ===
     ServiceProvider.OpenAI && (
     <>
-      <ListItem
-        title={Locale.Settings.Access.OpenAI.Endpoint.Title}
-        subTitle={Locale.Settings.Access.OpenAI.Endpoint.SubTitle}
-      >
-        <input
-          aria-label={Locale.Settings.Access.OpenAI.Endpoint.Title}
-          type="text"
-          value={accessStore.openaiUrl}
-          placeholder={OPENAI_BASE_URL}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.openaiUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
       <ListItem
         title={Locale.Settings.Access.OpenAI.ApiKey.Title}
         subTitle={Locale.Settings.Access.OpenAI.ApiKey.SubTitle}
@@ -710,25 +660,6 @@ export function Settings() {
   const googleConfigComponent = accessStore.provider ===
     ServiceProvider.Google && (
     <>
-      <ListItem
-        title={Locale.Settings.Access.Google.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.Google.Endpoint.SubTitle +
-          Google.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.Google.Endpoint.Title}
-          type="text"
-          value={accessStore.googleUrl}
-          placeholder={Google.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.googleUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
       <ListItem
         title={Locale.Settings.Access.Google.ApiKey.Title}
         subTitle={Locale.Settings.Access.Google.ApiKey.SubTitle}
@@ -790,25 +721,6 @@ export function Settings() {
     ServiceProvider.Anthropic && (
     <>
       <ListItem
-        title={Locale.Settings.Access.Anthropic.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.Anthropic.Endpoint.SubTitle +
-          Anthropic.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.Anthropic.Endpoint.Title}
-          type="text"
-          value={accessStore.anthropicUrl}
-          placeholder={Anthropic.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.anthropicUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
         title={Locale.Settings.Access.Anthropic.ApiKey.Title}
         subTitle={Locale.Settings.Access.Anthropic.ApiKey.SubTitle}
       >
@@ -846,22 +758,6 @@ export function Settings() {
   const tencentConfigComponent = accessStore.provider ===
     ServiceProvider.Tencent && (
     <>
-      <ListItem
-        title={Locale.Settings.Access.Tencent.Endpoint.Title}
-        subTitle={Locale.Settings.Access.Tencent.Endpoint.SubTitle}
-      >
-        <input
-          aria-label={Locale.Settings.Access.Tencent.Endpoint.Title}
-          type="text"
-          value={accessStore.tencentUrl}
-          placeholder={Tencent.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.tencentUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
       <ListItem
         title={Locale.Settings.Access.Tencent.ApiKey.Title}
         subTitle={Locale.Settings.Access.Tencent.ApiKey.SubTitle}
@@ -901,25 +797,6 @@ export function Settings() {
     ServiceProvider.ByteDance && (
     <>
       <ListItem
-        title={Locale.Settings.Access.ByteDance.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.ByteDance.Endpoint.SubTitle +
-          ByteDance.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.ByteDance.Endpoint.Title}
-          type="text"
-          value={accessStore.bytedanceUrl}
-          placeholder={ByteDance.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.bytedanceUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
         title={Locale.Settings.Access.ByteDance.ApiKey.Title}
         subTitle={Locale.Settings.Access.ByteDance.ApiKey.SubTitle}
       >
@@ -941,25 +818,6 @@ export function Settings() {
   const alibabaConfigComponent = accessStore.provider ===
     ServiceProvider.Alibaba && (
     <>
-      <ListItem
-        title={Locale.Settings.Access.Alibaba.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.Alibaba.Endpoint.SubTitle +
-          Alibaba.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.Alibaba.Endpoint.Title}
-          type="text"
-          value={accessStore.alibabaUrl}
-          placeholder={Alibaba.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.alibabaUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
       <ListItem
         title={Locale.Settings.Access.Alibaba.ApiKey.Title}
         subTitle={Locale.Settings.Access.Alibaba.ApiKey.SubTitle}
@@ -983,25 +841,6 @@ export function Settings() {
     ServiceProvider.Moonshot && (
     <>
       <ListItem
-        title={Locale.Settings.Access.Moonshot.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.Moonshot.Endpoint.SubTitle +
-          Moonshot.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.Moonshot.Endpoint.Title}
-          type="text"
-          value={accessStore.moonshotUrl}
-          placeholder={Moonshot.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.moonshotUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
         title={Locale.Settings.Access.Moonshot.ApiKey.Title}
         subTitle={Locale.Settings.Access.Moonshot.ApiKey.SubTitle}
       >
@@ -1024,25 +863,6 @@ export function Settings() {
     ServiceProvider.DeepSeek && (
     <>
       <ListItem
-        title={Locale.Settings.Access.DeepSeek.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.DeepSeek.Endpoint.SubTitle +
-          DeepSeek.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.DeepSeek.Endpoint.Title}
-          type="text"
-          value={accessStore.deepseekUrl}
-          placeholder={DeepSeek.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.deepseekUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
         title={Locale.Settings.Access.DeepSeek.ApiKey.Title}
         subTitle={Locale.Settings.Access.DeepSeek.ApiKey.SubTitle}
       >
@@ -1063,24 +883,6 @@ export function Settings() {
 
   const XAIConfigComponent = accessStore.provider === ServiceProvider.XAI && (
     <>
-      <ListItem
-        title={Locale.Settings.Access.XAI.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.XAI.Endpoint.SubTitle + XAI.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.XAI.Endpoint.Title}
-          type="text"
-          value={accessStore.xaiUrl}
-          placeholder={XAI.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.xaiUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
       <ListItem
         title={Locale.Settings.Access.XAI.ApiKey.Title}
         subTitle={Locale.Settings.Access.XAI.ApiKey.SubTitle}
@@ -1104,25 +906,6 @@ export function Settings() {
     ServiceProvider.ChatGLM && (
     <>
       <ListItem
-        title={Locale.Settings.Access.ChatGLM.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.ChatGLM.Endpoint.SubTitle +
-          ChatGLM.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.ChatGLM.Endpoint.Title}
-          type="text"
-          value={accessStore.chatglmUrl}
-          placeholder={ChatGLM.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.chatglmUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
         title={Locale.Settings.Access.ChatGLM.ApiKey.Title}
         subTitle={Locale.Settings.Access.ChatGLM.ApiKey.SubTitle}
       >
@@ -1143,25 +926,6 @@ export function Settings() {
   const stabilityConfigComponent = accessStore.provider ===
     ServiceProvider.Stability && (
     <>
-      <ListItem
-        title={Locale.Settings.Access.Stability.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.Stability.Endpoint.SubTitle +
-          Stability.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.Stability.Endpoint.Title}
-          type="text"
-          value={accessStore.stabilityUrl}
-          placeholder={Stability.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.stabilityUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
       <ListItem
         title={Locale.Settings.Access.Stability.ApiKey.Title}
         subTitle={Locale.Settings.Access.Stability.ApiKey.SubTitle}
@@ -1400,46 +1164,39 @@ export function Settings() {
 
           {!accessStore.hideUserApiKey && (
             <>
-              {useCustomConfigComponent}
+              <ListItem
+                title={Locale.Settings.Access.Provider.Title}
+                subTitle={Locale.Settings.Access.Provider.SubTitle}
+              >
+                <Select
+                  aria-label={Locale.Settings.Access.Provider.Title}
+                  value={accessStore.provider}
+                  onChange={(e) => {
+                    accessStore.update(
+                      (access) =>
+                        (access.provider = e.target.value as ServiceProvider),
+                    );
+                  }}
+                >
+                  {Object.entries(ServiceProvider).map(([k, v]) => (
+                    <option value={v} key={k}>
+                      {k}
+                    </option>
+                  ))}
+                </Select>
+              </ListItem>
 
-              {accessStore.useCustomConfig && (
-                <>
-                  <ListItem
-                    title={Locale.Settings.Access.Provider.Title}
-                    subTitle={Locale.Settings.Access.Provider.SubTitle}
-                  >
-                    <Select
-                      aria-label={Locale.Settings.Access.Provider.Title}
-                      value={accessStore.provider}
-                      onChange={(e) => {
-                        accessStore.update(
-                          (access) =>
-                            (access.provider = e.target
-                              .value as ServiceProvider),
-                        );
-                      }}
-                    >
-                      {Object.entries(ServiceProvider).map(([k, v]) => (
-                        <option value={v} key={k}>
-                          {k}
-                        </option>
-                      ))}
-                    </Select>
-                  </ListItem>
-
-                  {openAIConfigComponent}
-                  {googleConfigComponent}
-                  {anthropicConfigComponent}
-                  {byteDanceConfigComponent}
-                  {alibabaConfigComponent}
-                  {tencentConfigComponent}
-                  {moonshotConfigComponent}
-                  {deepseekConfigComponent}
-                  {stabilityConfigComponent}
-                  {XAIConfigComponent}
-                  {chatglmConfigComponent}
-                </>
-              )}
+              {openAIConfigComponent}
+              {googleConfigComponent}
+              {anthropicConfigComponent}
+              {byteDanceConfigComponent}
+              {alibabaConfigComponent}
+              {tencentConfigComponent}
+              {moonshotConfigComponent}
+              {deepseekConfigComponent}
+              {stabilityConfigComponent}
+              {XAIConfigComponent}
+              {chatglmConfigComponent}
             </>
           )}
 
@@ -1468,25 +1225,6 @@ export function Settings() {
               )}
             </ListItem>
           ) : null}
-
-          <ListItem
-            title={Locale.Settings.Access.CustomModel.Title}
-            subTitle={Locale.Settings.Access.CustomModel.SubTitle}
-            vertical={true}
-          >
-            <input
-              aria-label={Locale.Settings.Access.CustomModel.Title}
-              style={{ width: "100%", maxWidth: "unset", textAlign: "left" }}
-              type="text"
-              value={config.customModels}
-              placeholder="model1,model2,model3"
-              onChange={(e) =>
-                config.update(
-                  (config) => (config.customModels = e.currentTarget.value),
-                )
-              }
-            ></input>
-          </ListItem>
         </List>
 
         <List>

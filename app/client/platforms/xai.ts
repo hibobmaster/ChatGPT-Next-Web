@@ -2,7 +2,6 @@
 // azure and openai, using same models. so using same LLMApi.
 import { ApiPath, XAI_BASE_URL, XAI } from "@/app/constant";
 import {
-  useAccessStore,
   useAppConfig,
   useChatStore,
   ChatMessageTool,
@@ -26,19 +25,9 @@ export class XAIApi implements LLMApi {
   private disableListModels = true;
 
   path(path: string): string {
-    const accessStore = useAccessStore.getState();
-
-    let baseUrl = "";
-
-    if (accessStore.useCustomConfig) {
-      baseUrl = accessStore.xaiUrl;
-    }
-
-    if (baseUrl.length === 0) {
-      const isApp = !!getClientConfig()?.isApp;
-      const apiPath = ApiPath.XAI;
-      baseUrl = isApp ? XAI_BASE_URL : apiPath;
-    }
+    const isApp = !!getClientConfig()?.isApp;
+    const apiPath = ApiPath.XAI;
+    let baseUrl = isApp ? XAI_BASE_URL : apiPath;
 
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, baseUrl.length - 1);

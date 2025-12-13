@@ -8,7 +8,6 @@ import {
 } from "@/app/constant";
 import {
   ChatMessageTool,
-  useAccessStore,
   useAppConfig,
   useChatStore,
   usePluginStore,
@@ -79,18 +78,8 @@ export class ChatGPTApi implements LLMApi {
   private disableListModels = true;
 
   path(path: string): string {
-    const accessStore = useAccessStore.getState();
-
-    let baseUrl = "";
-
-    if (accessStore.useCustomConfig) {
-      baseUrl = accessStore.openaiUrl;
-    }
-
-    if (baseUrl.length === 0) {
-      const isApp = !!getClientConfig()?.isApp;
-      baseUrl = isApp ? OPENAI_BASE_URL : ApiPath.OpenAI;
-    }
+    const isApp = !!getClientConfig()?.isApp;
+    let baseUrl = isApp ? OPENAI_BASE_URL : ApiPath.OpenAI;
 
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, baseUrl.length - 1);

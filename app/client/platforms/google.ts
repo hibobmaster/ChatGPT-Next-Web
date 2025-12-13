@@ -31,17 +31,8 @@ import { fetch } from "@/app/utils/stream";
 
 export class GeminiProApi implements LLMApi {
   path(path: string, shouldStream = false): string {
-    const accessStore = useAccessStore.getState();
-
-    let baseUrl = "";
-    if (accessStore.useCustomConfig) {
-      baseUrl = accessStore.googleUrl;
-    }
-
     const isApp = !!getClientConfig()?.isApp;
-    if (baseUrl.length === 0) {
-      baseUrl = isApp ? GEMINI_BASE_URL : ApiPath.Google;
-    }
+    let baseUrl = isApp ? GEMINI_BASE_URL : ApiPath.Google;
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, baseUrl.length - 1);
     }

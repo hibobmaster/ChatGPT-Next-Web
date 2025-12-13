@@ -1,6 +1,6 @@
 "use client";
 import { ApiPath, TENCENT_BASE_URL } from "@/app/constant";
-import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
+import { useAppConfig, useChatStore } from "@/app/store";
 
 import {
   ChatOptions,
@@ -65,18 +65,8 @@ function capitalizeKeys(obj: any): any {
 
 export class HunyuanApi implements LLMApi {
   path(): string {
-    const accessStore = useAccessStore.getState();
-
-    let baseUrl = "";
-
-    if (accessStore.useCustomConfig) {
-      baseUrl = accessStore.tencentUrl;
-    }
-
-    if (baseUrl.length === 0) {
-      const isApp = !!getClientConfig()?.isApp;
-      baseUrl = isApp ? TENCENT_BASE_URL : ApiPath.Tencent;
-    }
+    const isApp = !!getClientConfig()?.isApp;
+    let baseUrl = isApp ? TENCENT_BASE_URL : ApiPath.Tencent;
 
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, baseUrl.length - 1);
