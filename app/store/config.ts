@@ -27,7 +27,10 @@ export enum Theme {
 }
 
 const config = getClientConfig();
-const REMOVED_PROVIDERS = ["Azure", "Baidu", "Iflytek", "SiliconFlow"];
+const ENABLED_PROVIDERS = [ServiceProvider.Google, ServiceProvider.DeepSeek];
+const REMOVED_PROVIDERS = (Object.values(ServiceProvider) as string[]).filter(
+  (p) => !ENABLED_PROVIDERS.includes(p as ServiceProvider),
+);
 
 export const DEFAULT_CONFIG = {
   lastUpdate: Date.now(), // timestamp, to merge state
@@ -55,8 +58,8 @@ export const DEFAULT_CONFIG = {
   models: DEFAULT_MODELS as any as LLMModel[],
 
   modelConfig: {
-    model: "gpt-4o-mini" as ModelType,
-    providerName: "OpenAI" as ServiceProvider,
+    model: "deepseek-chat" as ModelType,
+    providerName: ServiceProvider.DeepSeek as ServiceProvider,
     temperature: 0.5,
     top_p: 1,
     max_tokens: 4000,
@@ -163,7 +166,8 @@ export const useAppConfig = createPersistStore(
           persistedModelConfig?.providerName as unknown as string,
         )
       ) {
-        persistedModelConfig.providerName = ServiceProvider.OpenAI;
+        persistedModelConfig.providerName = ServiceProvider.DeepSeek;
+        persistedModelConfig.model = "deepseek-chat" as ModelType;
       }
       persistedModels.forEach((pModel) => {
         const idx = models.findIndex(
@@ -232,7 +236,8 @@ export const useAppConfig = createPersistStore(
             state.modelConfig?.providerName as unknown as string,
           )
         ) {
-          state.modelConfig.providerName = ServiceProvider.OpenAI;
+          state.modelConfig.providerName = ServiceProvider.DeepSeek;
+          state.modelConfig.model = "deepseek-chat" as ModelType;
         }
       }
       if (version < 4.3) {

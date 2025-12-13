@@ -12,7 +12,6 @@ export const useUpdateStore = createPersistStore(
   },
   (set, get) => ({
     async updateUsage(force = false) {
-      // only support openai for now
       const overOneMinute = Date.now() - get().lastUpdateUsage >= ONE_MINUTE;
       if (!overOneMinute && !force) return;
 
@@ -21,7 +20,7 @@ export const useUpdateStore = createPersistStore(
       }));
 
       try {
-        const api = new ClientApi(ModelProvider.GPT);
+        const api = new ClientApi(ModelProvider.DeepSeek);
         const usage = await api.llm.usage();
 
         if (usage) {

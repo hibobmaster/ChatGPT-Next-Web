@@ -415,7 +415,7 @@ export function ChatActions(props: {
   // switch model
   const currentModel = session.mask.modelConfig.model;
   const currentProviderName =
-    session.mask.modelConfig?.providerName || ServiceProvider.OpenAI;
+    session.mask.modelConfig?.providerName || ServiceProvider.DeepSeek;
   const allModels = useAllModels();
   const models = useMemo(() => {
     const filteredModels = allModels.filter((m) => m.available);
@@ -1287,7 +1287,7 @@ function ChatSession() {
             if (!res) return;
             if (payload.key) {
               accessStore.update(
-                (access) => (access.openaiApiKey = payload.key!),
+                (access) => (access.deepseekApiKey = payload.key!),
               );
             }
           });

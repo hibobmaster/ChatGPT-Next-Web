@@ -15,6 +15,11 @@ const CustomSeq = {
   },
 };
 
+const ENABLED_PROVIDERS = new Set<string>([
+  ServiceProvider.Google.toLowerCase(),
+  ServiceProvider.DeepSeek.toLowerCase(),
+]);
+
 const customProvider = (providerName: string) => ({
   id: providerName.toLowerCase(),
   providerName: providerName,
@@ -132,7 +137,20 @@ export function collectModelTable(
       }
     });
 
-  return modelTable;
+  const filteredTable: typeof modelTable = {};
+  Object.entries(modelTable).forEach(([key, model]) => {
+    const providerName = model.provider?.providerName?.toLowerCase();
+    const providerId = model.provider?.id?.toLowerCase();
+    if (
+      providerName &&
+      (ENABLED_PROVIDERS.has(providerName) ||
+        (providerId && ENABLED_PROVIDERS.has(providerId)))
+    ) {
+      filteredTable[key] = model;
+    }
+  });
+
+  return filteredTable;
 }
 
 export function collectModelTableWithDefaultModel(

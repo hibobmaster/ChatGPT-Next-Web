@@ -63,7 +63,7 @@ export const useSdStore = createPersistStore<
         okCall?.();
       },
       stabilityRequestCall(data: any) {
-        const accessStore = useAccessStore.getState();
+        const accessStore = useAccessStore.getState() as any;
         const prefix: string = ApiPath.Stability as string;
         let bearerToken = getBearerToken(accessStore.stabilityApiKey);
         if (!bearerToken && accessStore.enabledAccessControl()) {

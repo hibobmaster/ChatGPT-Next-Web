@@ -11,21 +11,13 @@ import {
   useAccessStore,
   useChatStore,
 } from "../store";
-import { ChatGPTApi, DalleRequestPayload } from "./platforms/openai";
 import { GeminiProApi } from "./platforms/google";
-import { ClaudeApi } from "./platforms/anthropic";
-import { DoubaoApi } from "./platforms/bytedance";
-import { QwenApi } from "./platforms/alibaba";
-import { HunyuanApi } from "./platforms/tencent";
-import { MoonshotApi } from "./platforms/moonshot";
 import { DeepSeekApi } from "./platforms/deepseek";
-import { XAIApi } from "./platforms/xai";
-import { ChatGLMApi } from "./platforms/glm";
 
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
 
-export const Models = ["gpt-3.5-turbo", "gpt-4"] as const;
+export const Models = ["deepseek-chat", "gemini-1.5-pro-latest"] as const;
 export type ChatModel = ModelType;
 
 export interface MultimodalContent {
@@ -49,9 +41,9 @@ export interface LLMConfig {
   stream?: boolean;
   presence_penalty?: number;
   frequency_penalty?: number;
-  size?: DalleRequestPayload["size"];
-  quality?: DalleRequestPayload["quality"];
-  style?: DalleRequestPayload["style"];
+  size?: string;
+  quality?: string;
+  style?: string;
 }
 
 export interface SpeechOptions {
@@ -126,37 +118,16 @@ interface ChatProvider {
 export class ClientApi {
   public llm: LLMApi;
 
-  constructor(provider: ModelProvider = ModelProvider.GPT) {
+  constructor(provider: ModelProvider = ModelProvider.DeepSeek) {
     switch (provider) {
       case ModelProvider.GeminiPro:
         this.llm = new GeminiProApi();
         break;
-      case ModelProvider.Claude:
-        this.llm = new ClaudeApi();
-        break;
-      case ModelProvider.Doubao:
-        this.llm = new DoubaoApi();
-        break;
-      case ModelProvider.Qwen:
-        this.llm = new QwenApi();
-        break;
-      case ModelProvider.Hunyuan:
-        this.llm = new HunyuanApi();
-        break;
-      case ModelProvider.Moonshot:
-        this.llm = new MoonshotApi();
-        break;
       case ModelProvider.DeepSeek:
         this.llm = new DeepSeekApi();
         break;
-      case ModelProvider.XAI:
-        this.llm = new XAIApi();
-        break;
-      case ModelProvider.ChatGLM:
-        this.llm = new ChatGLMApi();
-        break;
       default:
-        this.llm = new ChatGPTApi();
+        this.llm = new DeepSeekApi();
     }
   }
 
@@ -235,69 +206,26 @@ export function getHeaders(ignoreHeaders: boolean = false) {
   function getConfig() {
     const modelConfig = chatStore.currentSession().mask.modelConfig;
     const isGoogle = modelConfig.providerName === ServiceProvider.Google;
-    const isAnthropic = modelConfig.providerName === ServiceProvider.Anthropic;
-    const isByteDance = modelConfig.providerName === ServiceProvider.ByteDance;
-    const isAlibaba = modelConfig.providerName === ServiceProvider.Alibaba;
-    const isMoonshot = modelConfig.providerName === ServiceProvider.Moonshot;
-    const isDeepSeek = modelConfig.providerName === ServiceProvider.DeepSeek;
-    const isXAI = modelConfig.providerName === ServiceProvider.XAI;
-    const isChatGLM = modelConfig.providerName === ServiceProvider.ChatGLM;
     const isEnabledAccessControl = accessStore.enabledAccessControl();
     const apiKey = isGoogle
       ? accessStore.googleApiKey
-      : isAnthropic
-        ? accessStore.anthropicApiKey
-        : isByteDance
-          ? accessStore.bytedanceApiKey
-          : isAlibaba
-            ? accessStore.alibabaApiKey
-            : isMoonshot
-              ? accessStore.moonshotApiKey
-              : isXAI
-                ? accessStore.xaiApiKey
-                : isDeepSeek
-                  ? accessStore.deepseekApiKey
-                  : isChatGLM
-                    ? accessStore.chatglmApiKey
-                    : accessStore.openaiApiKey;
+      : accessStore.deepseekApiKey;
     return {
       isGoogle,
-      isAnthropic,
-      isByteDance,
-      isAlibaba,
-      isMoonshot,
-      isDeepSeek,
-      isXAI,
-      isChatGLM,
       apiKey,
       isEnabledAccessControl,
     };
   }
 
   function getAuthHeader(): string {
-    return isAnthropic
-      ? "x-api-key"
-      : isGoogle
-        ? "x-goog-api-key"
-        : "Authorization";
+    return isGoogle ? "x-goog-api-key" : "Authorization";
   }
 
-  const {
-    isGoogle,
-    isAnthropic,
-    isByteDance,
-    isAlibaba,
-    isMoonshot,
-    isDeepSeek,
-    isXAI,
-    isChatGLM,
-    apiKey,
-    isEnabledAccessControl,
-  } = getConfig();
+  const { isGoogle, apiKey, isEnabledAccessControl } = getConfig();
 
   const authHeader = getAuthHeader();
 
-  const bearerToken = getBearerToken(apiKey, isAnthropic || isGoogle);
+  const bearerToken = getBearerToken(apiKey, isGoogle);
 
   if (bearerToken) {
     headers[authHeader] = bearerToken;
@@ -314,23 +242,9 @@ export function getClientApi(provider: ServiceProvider): ClientApi {
   switch (provider) {
     case ServiceProvider.Google:
       return new ClientApi(ModelProvider.GeminiPro);
-    case ServiceProvider.Anthropic:
-      return new ClientApi(ModelProvider.Claude);
-    case ServiceProvider.ByteDance:
-      return new ClientApi(ModelProvider.Doubao);
-    case ServiceProvider.Alibaba:
-      return new ClientApi(ModelProvider.Qwen);
-    case ServiceProvider.Tencent:
-      return new ClientApi(ModelProvider.Hunyuan);
-    case ServiceProvider.Moonshot:
-      return new ClientApi(ModelProvider.Moonshot);
     case ServiceProvider.DeepSeek:
       return new ClientApi(ModelProvider.DeepSeek);
-    case ServiceProvider.XAI:
-      return new ClientApi(ModelProvider.XAI);
-    case ServiceProvider.ChatGLM:
-      return new ClientApi(ModelProvider.ChatGLM);
     default:
-      return new ClientApi(ModelProvider.GPT);
+      return new ClientApi(ModelProvider.DeepSeek);
   }
 }

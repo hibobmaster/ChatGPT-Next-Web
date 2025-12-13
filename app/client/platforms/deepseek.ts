@@ -21,7 +21,7 @@ import {
   getMessageTextContentWithoutThinking,
   getTimeoutMSByModel,
 } from "@/app/utils";
-import { RequestPayload } from "./openai";
+import { RequestPayload } from "./types";
 import { fetch } from "@/app/utils/stream";
 
 export class DeepSeekApi implements LLMApi {

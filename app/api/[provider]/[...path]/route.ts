@@ -1,15 +1,7 @@
 import { ApiPath } from "@/app/constant";
 import { NextRequest } from "next/server";
-import { handle as openaiHandler } from "../../openai";
 import { handle as googleHandler } from "../../google";
-import { handle as anthropicHandler } from "../../anthropic";
-import { handle as bytedanceHandler } from "../../bytedance";
-import { handle as alibabaHandler } from "../../alibaba";
-import { handle as moonshotHandler } from "../../moonshot";
-import { handle as stabilityHandler } from "../../stability";
 import { handle as deepseekHandler } from "../../deepseek";
-import { handle as xaiHandler } from "../../xai";
-import { handle as chatglmHandler } from "../../glm";
 import { handle as proxyHandler } from "../../proxy";
 
 async function handle(
@@ -22,25 +14,8 @@ async function handle(
   switch (apiPath) {
     case ApiPath.Google:
       return googleHandler(req, { params: p });
-    case ApiPath.Anthropic:
-      return anthropicHandler(req, { params: p });
-    case ApiPath.ByteDance:
-      return bytedanceHandler(req, { params: p });
-    case ApiPath.Alibaba:
-      return alibabaHandler(req, { params: p });
-    // case ApiPath.Tencent: using "/api/tencent"
-    case ApiPath.Moonshot:
-      return moonshotHandler(req, { params: p });
-    case ApiPath.Stability:
-      return stabilityHandler(req, { params: p });
     case ApiPath.DeepSeek:
       return deepseekHandler(req, { params: p });
-    case ApiPath.XAI:
-      return xaiHandler(req, { params: p });
-    case ApiPath.ChatGLM:
-      return chatglmHandler(req, { params: p });
-    case ApiPath.OpenAI:
-      return openaiHandler(req, { params: p });
     default:
       return proxyHandler(req, { params: p });
   }

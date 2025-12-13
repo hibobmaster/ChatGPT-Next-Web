@@ -21,7 +21,6 @@ import {
   DEFAULT_SYSTEM_TEMPLATE,
   GEMINI_SUMMARIZE_MODEL,
   DEEPSEEK_SUMMARIZE_MODEL,
-  KnowledgeCutOffDate,
   MCP_SYSTEM_TEMPLATE,
   MCP_TOOLS_TEMPLATE,
   ServiceProvider,
@@ -33,8 +32,6 @@ import { prettyObject } from "../utils/format";
 import { createPersistStore } from "../utils/store";
 import { estimateTokenLength } from "../utils/token";
 import { ModelConfig, ModelType, useAppConfig } from "./config";
-import { useAccessStore } from "./access";
-import { collectModelsWithDefaultModel } from "../utils/model";
 import { createEmptyMask, Mask } from "./mask";
 import { executeMcpAction, getAllTools, isMcpEnabled } from "../mcp/actions";
 import { extractMcpJson, isMcpJson } from "../mcp/utils";
@@ -123,24 +120,9 @@ function getSummarizeModel(
   currentModel: string,
   providerName: string,
 ): string[] {
-  // if it is using gpt-* models, force to use 4o-mini to summarize
+  // use a dedicated summarize model when available
   if (currentModel.startsWith("gpt") || currentModel.startsWith("chatgpt")) {
-    const configStore = useAppConfig.getState();
-    const accessStore = useAccessStore.getState();
-    const allModel = collectModelsWithDefaultModel(
-      configStore.models,
-      [configStore.customModels, accessStore.customModels].join(","),
-      accessStore.defaultModel,
-    );
-    const summarizeModel = allModel.find(
-      (m) => m.name === SUMMARIZE_MODEL && m.available,
-    );
-    if (summarizeModel) {
-      return [
-        summarizeModel.name,
-        summarizeModel.provider?.providerName as string,
-      ];
-    }
+    return [SUMMARIZE_MODEL, ServiceProvider.DeepSeek];
   }
   if (currentModel.startsWith("gemini")) {
     return [GEMINI_SUMMARIZE_MODEL, ServiceProvider.Google];
@@ -159,12 +141,10 @@ function countMessages(msgs: ChatMessage[]) {
 }
 
 function fillTemplateWith(input: string, modelConfig: ModelConfig) {
-  const cutoff =
-    KnowledgeCutOffDate[modelConfig.model] ?? KnowledgeCutOffDate.default;
   // Find the model in the DEFAULT_MODELS array that matches the modelConfig.model
   const modelInfo = DEFAULT_MODELS.find((m) => m.name === modelConfig.model);
 
-  var serviceProvider = "OpenAI";
+  let serviceProvider: string = ServiceProvider.DeepSeek;
   if (modelInfo) {
     // TODO: auto detect the providerName from the modelConfig.model
 
@@ -174,7 +154,7 @@ function fillTemplateWith(input: string, modelConfig: ModelConfig) {
 
   const vars = {
     ServiceProvider: serviceProvider,
-    cutoff,
+    cutoff: "unknown",
     model: modelConfig.model,
     time: new Date().toString(),
     lang: getLang(),
@@ -866,7 +846,12 @@ export const useChatStore = createPersistStore(
       const newState = JSON.parse(
         JSON.stringify(state),
       ) as typeof DEFAULT_CHAT_STATE;
-      const REMOVED_PROVIDERS = ["Azure", "Baidu", "Iflytek", "SiliconFlow"];
+      const REMOVED_PROVIDERS = Object.values(ServiceProvider).filter(
+        (p) =>
+          ![ServiceProvider.Google, ServiceProvider.DeepSeek].includes(
+            p as ServiceProvider,
+          ),
+      );
 
       if (version < 2) {
         newState.sessions = [];
@@ -932,7 +917,8 @@ export const useChatStore = createPersistStore(
               s?.mask?.modelConfig?.providerName as any,
             )
           ) {
-            s.mask.modelConfig.providerName = ServiceProvider.OpenAI;
+            s.mask.modelConfig.providerName = ServiceProvider.DeepSeek;
+            s.mask.modelConfig.model = "deepseek-chat";
           }
         });
       }
