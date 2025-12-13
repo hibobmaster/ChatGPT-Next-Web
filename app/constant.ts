@@ -34,17 +34,7 @@ export enum Path {
 
 export enum ApiPath {
   Cors = "",
-  OpenAI = "/api/openai",
-  Anthropic = "/api/anthropic",
   Google = "/api/google",
-  ByteDance = "/api/bytedance",
-  Alibaba = "/api/alibaba",
-  Tencent = "/api/tencent",
-  Moonshot = "/api/moonshot",
-  Stability = "/api/stability",
-  Artifacts = "/api/artifacts",
-  XAI = "/api/xai",
-  ChatGLM = "/api/chatglm",
   DeepSeek = "/api/deepseek",
 }
 
@@ -88,16 +78,7 @@ export const REQUEST_TIMEOUT_MS_FOR_THINKING = REQUEST_TIMEOUT_MS * 5;
 export const EXPORT_MESSAGE_CLASS_NAME = "export-markdown";
 
 export enum ServiceProvider {
-  OpenAI = "OpenAI",
   Google = "Google",
-  Anthropic = "Anthropic",
-  ByteDance = "ByteDance",
-  Alibaba = "Alibaba",
-  Tencent = "Tencent",
-  Moonshot = "Moonshot",
-  Stability = "Stability",
-  XAI = "XAI",
-  ChatGLM = "ChatGLM",
   DeepSeek = "DeepSeek",
 }
 
@@ -276,7 +257,11 @@ export const VISION_MODEL_REGEXES = [
 
 export const EXCLUDE_VISION_MODEL_REGEXES = [/claude-3-5-haiku-20241022/];
 
-const googleModels = ["gemini-2.5-flash", "gemini-2.5-pro"];
+const googleModels = [
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-pro",
+];
 
 const deepseekModels = ["deepseek-chat", "deepseek-reasoner"];
 

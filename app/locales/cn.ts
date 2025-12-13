@@ -318,35 +318,6 @@ const cn = {
         Title: "模型服务商",
         SubTitle: "切换不同的服务商",
       },
-      OpenAI: {
-        ApiKey: {
-          Title: "API Key",
-          SubTitle: "使用自定义 OpenAI Key 绕过密码访问限制",
-          Placeholder: "OpenAI API Key",
-        },
-
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "除默认地址外，必须包含 http(s)://",
-        },
-      },
-      Anthropic: {
-        ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义 Anthropic Key 绕过密码访问限制",
-          Placeholder: "Anthropic API Key",
-        },
-
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-
-        ApiVerion: {
-          Title: "接口版本 (claude api version)",
-          SubTitle: "选择一个特定的 API 版本输入",
-        },
-      },
       Google: {
         ApiKey: {
           Title: "API 密钥",
@@ -368,93 +339,11 @@ const cn = {
           SubTitle: "设置内容过滤级别",
         },
       },
-      Tencent: {
-        ApiKey: {
-          Title: "API Key",
-          SubTitle: "使用自定义腾讯云API Key",
-          Placeholder: "Tencent API Key",
-        },
-        SecretKey: {
-          Title: "Secret Key",
-          SubTitle: "使用自定义腾讯云Secret Key",
-          Placeholder: "Tencent Secret Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "不支持自定义前往.env配置",
-        },
-      },
-      ByteDance: {
-        ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义 ByteDance API Key",
-          Placeholder: "ByteDance API Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-      },
-      Alibaba: {
-        ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义阿里云API Key",
-          Placeholder: "Alibaba Cloud API Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-      },
-      Moonshot: {
-        ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义月之暗面API Key",
-          Placeholder: "Moonshot API Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-      },
       DeepSeek: {
         ApiKey: {
           Title: "接口密钥",
           SubTitle: "使用自定义DeepSeek API Key",
           Placeholder: "DeepSeek API Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-      },
-      XAI: {
-        ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义XAI API Key",
-          Placeholder: "XAI API Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-      },
-      ChatGLM: {
-        ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义 ChatGLM API Key",
-          Placeholder: "ChatGLM API Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-      },
-      Stability: {
-        ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义 Stability API Key",
-          Placeholder: "Stability API Key",
         },
         Endpoint: {
           Title: "接口地址",

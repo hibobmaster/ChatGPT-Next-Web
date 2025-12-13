@@ -108,7 +108,7 @@ export function Sd() {
       <SideBar className={clsx({ [homeStyles["sidebar-show"]]: isSd })} />
       <WindowContent>
         <div className={chatStyles.chat} key={"1"}>
-          <div className="window-header" data-tauri-drag-region>
+          <div className="window-header">
             {isMobileScreen && (
               <div className="window-actions">
                 <div className={"window-action-button"}>

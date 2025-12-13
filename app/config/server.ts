@@ -26,9 +26,6 @@ declare global {
       VISION_MODELS?: string; // to control vision models
 
       // stability only
-      STABILITY_URL?: string;
-      STABILITY_API_KEY?: string;
-
       // google only
       GOOGLE_API_KEY?: string;
       GOOGLE_URL?: string;
@@ -36,38 +33,8 @@ declare global {
       // google tag manager
       GTM_ID?: string;
 
-      // anthropic only
-      ANTHROPIC_URL?: string;
-      ANTHROPIC_API_KEY?: string;
-      ANTHROPIC_API_VERSION?: string;
-
-      // bytedance only
-      BYTEDANCE_URL?: string;
-      BYTEDANCE_API_KEY?: string;
-
-      // alibaba only
-      ALIBABA_URL?: string;
-      ALIBABA_API_KEY?: string;
-
-      // tencent only
-      TENCENT_URL?: string;
-      TENCENT_SECRET_KEY?: string;
-      TENCENT_SECRET_ID?: string;
-
-      // moonshot only
-      MOONSHOT_URL?: string;
-      MOONSHOT_API_KEY?: string;
-
       DEEPSEEK_URL?: string;
       DEEPSEEK_API_KEY?: string;
-
-      // xai only
-      XAI_URL?: string;
-      XAI_API_KEY?: string;
-
-      // chatglm only
-      CHATGLM_URL?: string;
-      CHATGLM_API_KEY?: string;
 
       // custom template for preprocessing user input
       DEFAULT_INPUT_TEMPLATE?: string;
@@ -128,18 +95,8 @@ export const getServerSideConfig = () => {
     }
   }
 
-  const isStability = !!process.env.STABILITY_API_KEY;
-
   const isGoogle = !!process.env.GOOGLE_API_KEY;
-  const isAnthropic = !!process.env.ANTHROPIC_API_KEY;
-  const isTencent = !!process.env.TENCENT_API_KEY;
-
-  const isBytedance = !!process.env.BYTEDANCE_API_KEY;
-  const isAlibaba = !!process.env.ALIBABA_API_KEY;
-  const isMoonshot = !!process.env.MOONSHOT_API_KEY;
   const isDeepSeek = !!process.env.DEEPSEEK_API_KEY;
-  const isXAI = !!process.env.XAI_API_KEY;
-  const isChatGLM = !!process.env.CHATGLM_API_KEY;
   // const apiKeyEnvVar = process.env.OPENAI_API_KEY ?? "";
   // const apiKeys = apiKeyEnvVar.split(",").map((v) => v.trim());
   // const randomIndex = Math.floor(Math.random() * apiKeys.length);
@@ -153,47 +110,13 @@ export const getServerSideConfig = () => {
     apiKey: getApiKey(process.env.OPENAI_API_KEY),
     openaiOrgId: process.env.OPENAI_ORG_ID,
 
-    isStability,
-    stabilityUrl: process.env.STABILITY_URL,
-    stabilityApiKey: getApiKey(process.env.STABILITY_API_KEY),
-
     isGoogle,
     googleApiKey: getApiKey(process.env.GOOGLE_API_KEY),
     googleUrl: process.env.GOOGLE_URL,
 
-    isAnthropic,
-    anthropicApiKey: getApiKey(process.env.ANTHROPIC_API_KEY),
-    anthropicApiVersion: process.env.ANTHROPIC_API_VERSION,
-    anthropicUrl: process.env.ANTHROPIC_URL,
-
-    isBytedance,
-    bytedanceApiKey: getApiKey(process.env.BYTEDANCE_API_KEY),
-    bytedanceUrl: process.env.BYTEDANCE_URL,
-
-    isAlibaba,
-    alibabaUrl: process.env.ALIBABA_URL,
-    alibabaApiKey: getApiKey(process.env.ALIBABA_API_KEY),
-
-    isTencent,
-    tencentUrl: process.env.TENCENT_URL,
-    tencentSecretKey: getApiKey(process.env.TENCENT_SECRET_KEY),
-    tencentSecretId: process.env.TENCENT_SECRET_ID,
-
-    isMoonshot,
-    moonshotUrl: process.env.MOONSHOT_URL,
-    moonshotApiKey: getApiKey(process.env.MOONSHOT_API_KEY),
-
     isDeepSeek,
     deepseekUrl: process.env.DEEPSEEK_URL,
     deepseekApiKey: getApiKey(process.env.DEEPSEEK_API_KEY),
-
-    isXAI,
-    xaiUrl: process.env.XAI_URL,
-    xaiApiKey: getApiKey(process.env.XAI_API_KEY),
-
-    isChatGLM,
-    chatglmUrl: process.env.CHATGLM_URL,
-    chatglmApiKey: getApiKey(process.env.CHATGLM_API_KEY),
 
     cloudflareAccountId: process.env.CLOUDFLARE_ACCOUNT_ID,
     cloudflareKVNamespaceId: process.env.CLOUDFLARE_KV_NAMESPACE_ID,

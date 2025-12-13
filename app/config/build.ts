@@ -1,4 +1,4 @@
-import tauriConfig from "../../src-tauri/tauri.conf.json";
+import packageJson from "../../package.json";
 import { DEFAULT_INPUT_TEMPLATE } from "../constant";
 
 export const getBuildConfig = () => {
@@ -10,7 +10,8 @@ export const getBuildConfig = () => {
 
   const buildMode = process.env.BUILD_MODE ?? "standalone";
   const isApp = !!process.env.BUILD_APP;
-  const version = "v" + tauriConfig.package.version;
+  const version =
+    "v" + (process.env.npm_package_version ?? packageJson.version ?? "0.0.0");
 
   const commitInfo = (() => {
     // Only run git commands on server (Node.js environment with child_process)
