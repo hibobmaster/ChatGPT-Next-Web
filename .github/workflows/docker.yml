@@ -59,7 +59,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            type=raw,value=${{ env.TAG_BASE }}-${{ matrix.archSuffix }}
+            ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}-${{ matrix.archSuffix }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
