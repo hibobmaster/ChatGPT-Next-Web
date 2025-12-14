@@ -69,6 +69,7 @@ const DEFAULT_ACCESS_STATE = {
   defaultModel: INITIAL_PROVIDER_DEFAULT_MODEL,
   visionModels: "",
   enabledProviders: [...INITIAL_ENABLED_PROVIDERS],
+  hasBasicAuth: false,
 };
 
 export const useAccessStore = createPersistStore(
@@ -145,7 +146,13 @@ export const useAccessStore = createPersistStore(
         })
         .then((res: DangerConfig) => {
           console.log("[Config] got config from server", res);
-          set(() => ({ ...res }));
+          const hasBasicAuth = res.hasBasicAuth ?? false;
+          const config = {
+            ...res,
+            needCode: hasBasicAuth ? false : res.needCode,
+            hasBasicAuth,
+          };
+          set(() => config);
         })
         .catch(() => {
           console.error("[Config] failed to fetch config");

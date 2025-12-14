@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { getServerSideConfig } from "../../config/server";
 
@@ -18,12 +18,25 @@ const DANGER_CONFIG = {
   enabledProviders: serverConfig.enabledProviders,
 };
 
+type DangerConfigBase = typeof DANGER_CONFIG;
+
 declare global {
-  type DangerConfig = typeof DANGER_CONFIG;
+  type DangerConfig = DangerConfigBase & {
+    hasBasicAuth: boolean;
+  };
 }
 
-async function handle() {
-  return NextResponse.json(DANGER_CONFIG);
+async function handle(req: NextRequest) {
+  const authHeader = req.headers.get("authorization") ?? "";
+  const hasBasicAuth = authHeader.trim().toLowerCase().startsWith("basic ");
+
+  const needCode = hasBasicAuth ? false : DANGER_CONFIG.needCode;
+
+  return NextResponse.json({
+    ...DANGER_CONFIG,
+    needCode,
+    hasBasicAuth,
+  });
 }
 
 export const GET = handle;
