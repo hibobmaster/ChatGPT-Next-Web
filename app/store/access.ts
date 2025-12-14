@@ -24,9 +24,10 @@ const DEFAULT_GOOGLE_URL = isApp ? GEMINI_BASE_URL : ApiPath.Google;
 const DEFAULT_DEEPSEEK_URL = isApp ? DEEPSEEK_BASE_URL : ApiPath.DeepSeek;
 
 const serverConfigMeta = getServerConfig();
+const serverEnabledProviders = serverConfigMeta?.enabledProviders ?? [];
 const INITIAL_ENABLED_PROVIDERS =
-  serverConfigMeta?.enabledProviders?.length > 0
-    ? [...serverConfigMeta.enabledProviders]
+  serverEnabledProviders.length > 0
+    ? [...serverEnabledProviders]
     : [...DEFAULT_ENABLED_PROVIDERS];
 function getDefaultModelForProvider(provider: ServiceProvider) {
   const model = DEFAULT_MODELS.find(

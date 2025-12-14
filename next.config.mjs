@@ -1,3 +1,4 @@
+import path from "path";
 import webpack from "webpack";
 
 const mode = process.env.BUILD_MODE ?? "standalone";
@@ -19,6 +20,9 @@ const nextConfig = {
         new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
       );
     }
+
+    config.resolve.alias = config.resolve.alias ?? {};
+    config.resolve.alias.cytoscape = path.resolve("./lib/cytoscape-compat.ts");
 
     config.resolve.fallback = {
       child_process: false,

@@ -1,8 +1,4 @@
-import {
-  DEFAULT_ENABLED_PROVIDERS,
-  DEFAULT_MODELS,
-  ServiceProvider,
-} from "../constant";
+import { DEFAULT_ENABLED_PROVIDERS, DEFAULT_MODELS } from "../constant";
 import { LLMModel } from "../client/api";
 
 const CustomSeq = {
@@ -113,11 +109,6 @@ export function collectModelTable(
           ) {
             count += 1;
             modelTable[fullName]["available"] = available;
-            // swap name and displayName for bytedance
-            if (providerName === "bytedance") {
-              [name, displayName] = [displayName, modelName];
-              modelTable[fullName]["name"] = name;
-            }
             if (displayName) {
               modelTable[fullName]["displayName"] = displayName;
             }
@@ -129,10 +120,6 @@ export function collectModelTable(
           const provider = customProvider(
             customProviderName || customModelName,
           );
-          // swap name and displayName for bytedance
-          if (displayName && provider.providerName == "ByteDance") {
-            [customModelName, displayName] = [displayName, customModelName];
-          }
           modelTable[`${customModelName}@${provider?.id}`] = {
             name: customModelName,
             displayName: displayName || customModelName,
@@ -276,11 +263,6 @@ export function isModelNotavailableInServer(
     ? providerNames
     : [providerNames];
   for (const providerName of providerNamesArray) {
-    // if model provider is bytedance, use model config name to check if not avaliable
-    if (providerName === ServiceProvider.ByteDance) {
-      return !Object.values(modelTable).filter((v) => v.name === modelName)?.[0]
-        ?.available;
-    }
     const fullName = `${modelName}@${providerName.toLowerCase()}`;
     if (modelTable?.[fullName]?.available === true) return false;
   }

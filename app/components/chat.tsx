@@ -471,7 +471,7 @@ export function ChatActions(props: {
           ?.providerName as ServiceProvider;
       });
       showToast(
-        nextModel?.provider?.providerName == "ByteDance"
+        nextModel?.provider?.providerName == "DeepSeek"
           ? nextModel.displayName
           : nextModel.name,
       );
@@ -567,7 +567,7 @@ export function ChatActions(props: {
                   providerName as ServiceProvider;
                 session.mask.syncGlobalConfig = false;
               });
-              if (providerName == "ByteDance") {
+              if (providerName == "Google") {
                 const selectedModel = models.find(
                   (m) =>
                     m.name == model &&

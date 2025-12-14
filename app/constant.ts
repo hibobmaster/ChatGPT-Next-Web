@@ -34,6 +34,8 @@ export enum ApiPath {
   Cors = "",
   Google = "/api/google",
   DeepSeek = "/api/deepseek",
+  Artifacts = "/api/artifacts",
+  Stability = "/api/stability",
 }
 
 export enum SlotID {
