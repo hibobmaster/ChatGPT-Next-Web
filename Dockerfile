@@ -1,4 +1,7 @@
-FROM node:18-alpine AS base
+FROM node:lts-alpine AS base
+
+# Enable pnpm via corepack so every stage can run the same commands.
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 FROM base AS deps
 
@@ -6,10 +9,10 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY package.json pnpm-lock.yaml ./
 
-RUN yarn config set registry 'https://registry.npmmirror.com/'
-RUN yarn install
+# Install production and development dependencies once for all subsequent stages.
+RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
 
@@ -23,7 +26,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN yarn build
+# Build the Next.js application using pnpm.
+RUN pnpm build
 
 FROM base AS runner
 WORKDIR /app
@@ -46,23 +50,4 @@ COPY --from=builder /app/app/mcp/mcp_config.default.json /app/app/mcp/mcp_config
 
 EXPOSE 3000
 
-CMD if [ -n "$PROXY_URL" ]; then \
-    export HOSTNAME="0.0.0.0"; \
-    protocol=$(echo $PROXY_URL | cut -d: -f1); \
-    host=$(echo $PROXY_URL | cut -d/ -f3 | cut -d: -f1); \
-    port=$(echo $PROXY_URL | cut -d: -f3); \
-    conf=/etc/proxychains.conf; \
-    echo "strict_chain" > $conf; \
-    echo "proxy_dns" >> $conf; \
-    echo "remote_dns_subnet 224" >> $conf; \
-    echo "tcp_read_time_out 15000" >> $conf; \
-    echo "tcp_connect_time_out 8000" >> $conf; \
-    echo "localnet 127.0.0.0/255.0.0.0" >> $conf; \
-    echo "localnet ::1/128" >> $conf; \
-    echo "[ProxyList]" >> $conf; \
-    echo "$protocol $host $port" >> $conf; \
-    cat /etc/proxychains.conf; \
-    proxychains -f $conf node server.js; \
-    else \
-    node server.js; \
-    fi
+CMD node server.js
