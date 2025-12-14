@@ -32,7 +32,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      -
+      - 
         name: Calculate tag base
         id: tag_base
         run: |
@@ -41,7 +41,9 @@ jobs:
           else
             TAG_BASE="latest"
           fi
+          RUN_SUFFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           echo "TAG_BASE=${TAG_BASE}" >> "$GITHUB_ENV"
+          echo "RUN_SUFFIX=${RUN_SUFFIX}" >> "$GITHUB_ENV"
       - 
         name: Extract metadata for Docker labels
         id: meta
@@ -59,7 +61,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}-${{ github.run_id }}-${{ matrix.archSuffix }}
+            ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}-${{ env.RUN_SUFFIX }}-${{ matrix.archSuffix }}
           labels: ${{ steps.meta.outputs.labels }}
 
   create_manifest:
@@ -67,7 +69,7 @@ jobs:
     needs: push_to_registry
     runs-on: ubuntu-latest
     steps:
-      -
+      - 
         name: Calculate tag base
         id: tag_base_manifest
         run: |
@@ -76,7 +78,9 @@ jobs:
           else
             TAG_BASE="latest"
           fi
+          RUN_SUFFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           echo "TAG_BASE=${TAG_BASE}" >> "$GITHUB_ENV"
+          echo "RUN_SUFFIX=${RUN_SUFFIX}" >> "$GITHUB_ENV"
       -
         name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -88,7 +92,7 @@ jobs:
         run: |
           docker manifest create \
             ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }} \
-            ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}-${{ github.run_id }}-amd64 \
-            ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}-${{ github.run_id }}-arm64
+            ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}-${{ env.RUN_SUFFIX }}-amd64 \
+            ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}-${{ env.RUN_SUFFIX }}-arm64
           docker manifest push ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}
             
