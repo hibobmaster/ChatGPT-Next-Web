@@ -2,6 +2,7 @@ import { LLMModel } from "../client/api";
 import { DalleQuality, DalleStyle, ModelSize } from "../typing";
 import { getClientConfig } from "../config/client";
 import {
+  DEFAULT_ENABLED_PROVIDERS,
   DEFAULT_INPUT_TEMPLATE,
   DEFAULT_MODELS,
   DEFAULT_SIDEBAR_WIDTH,
@@ -27,7 +28,7 @@ export enum Theme {
 }
 
 const config = getClientConfig();
-const ENABLED_PROVIDERS = [ServiceProvider.Google, ServiceProvider.DeepSeek];
+const ENABLED_PROVIDERS = DEFAULT_ENABLED_PROVIDERS;
 const REMOVED_PROVIDERS = (Object.values(ServiceProvider) as string[]).filter(
   (p) => !ENABLED_PROVIDERS.includes(p as ServiceProvider),
 );

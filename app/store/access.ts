@@ -1,4 +1,6 @@
 import {
+  DEFAULT_ENABLED_PROVIDERS,
+  DEFAULT_MODELS,
   GoogleSafetySettingsThreshold,
   ServiceProvider,
   StoreKey,
@@ -7,7 +9,7 @@ import {
   DEEPSEEK_BASE_URL,
 } from "../constant";
 import { getHeaders } from "../client/api";
-import { getClientConfig } from "../config/client";
+import { getClientConfig, getServerConfig } from "../config/client";
 import { createPersistStore } from "../utils/store";
 import { ensure } from "../utils/clone";
 import { DEFAULT_CONFIG } from "./config";
@@ -21,16 +23,30 @@ const DEFAULT_GOOGLE_URL = isApp ? GEMINI_BASE_URL : ApiPath.Google;
 
 const DEFAULT_DEEPSEEK_URL = isApp ? DEEPSEEK_BASE_URL : ApiPath.DeepSeek;
 
-const ENABLED_PROVIDERS = [ServiceProvider.Google, ServiceProvider.DeepSeek];
+const serverConfigMeta = getServerConfig();
+const INITIAL_ENABLED_PROVIDERS =
+  serverConfigMeta?.enabledProviders?.length > 0
+    ? [...serverConfigMeta.enabledProviders]
+    : [...DEFAULT_ENABLED_PROVIDERS];
+function getDefaultModelForProvider(provider: ServiceProvider) {
+  const model = DEFAULT_MODELS.find(
+    (entry) => entry.provider?.providerName === provider,
+  );
+  return model?.name ?? DEFAULT_CONFIG.modelConfig.model;
+}
+const INITIAL_PROVIDER =
+  INITIAL_ENABLED_PROVIDERS[0] ?? ServiceProvider.DeepSeek;
+const INITIAL_PROVIDER_DEFAULT_MODEL =
+  getDefaultModelForProvider(INITIAL_PROVIDER);
 const REMOVED_PROVIDERS = Object.values(ServiceProvider).filter(
-  (p) => !ENABLED_PROVIDERS.includes(p as ServiceProvider),
+  (p) => !DEFAULT_ENABLED_PROVIDERS.includes(p as ServiceProvider),
 );
 
 const DEFAULT_ACCESS_STATE = {
   accessCode: "",
   useCustomConfig: false,
 
-  provider: ServiceProvider.DeepSeek,
+  provider: INITIAL_PROVIDER,
 
   // google ai studio
   googleUrl: DEFAULT_GOOGLE_URL,
@@ -49,8 +65,9 @@ const DEFAULT_ACCESS_STATE = {
   disableGPT4: false,
   disableFastLink: false,
   customModels: "",
-  defaultModel: "deepseek-chat",
+  defaultModel: INITIAL_PROVIDER_DEFAULT_MODEL,
   visionModels: "",
+  enabledProviders: [...INITIAL_ENABLED_PROVIDERS],
 };
 
 export const useAccessStore = createPersistStore(
@@ -99,16 +116,28 @@ export const useAccessStore = createPersistStore(
         .then((res) => res.json())
         .then((res) => {
           const defaultModel = res.defaultModel ?? "";
-          if (defaultModel !== "") {
+          const enabledProvidersFromServer =
+            res.enabledProviders?.length > 0
+              ? res.enabledProviders
+              : [...DEFAULT_ENABLED_PROVIDERS];
+          if (defaultModel !== "" && enabledProvidersFromServer.length > 0) {
             const [model, providerName] = getModelProvider(defaultModel);
-            const targetProvider = ENABLED_PROVIDERS.includes(
-              providerName as ServiceProvider,
-            )
-              ? (providerName as ServiceProvider)
-              : ServiceProvider.DeepSeek;
-            DEFAULT_CONFIG.modelConfig.model =
-              targetProvider === providerName ? model : "deepseek-chat";
-            DEFAULT_CONFIG.modelConfig.providerName = targetProvider as any;
+            const normalizedProvider = providerName as ServiceProvider;
+            let targetProvider: ServiceProvider | undefined;
+            if (
+              normalizedProvider &&
+              enabledProvidersFromServer.includes(normalizedProvider)
+            ) {
+              targetProvider = normalizedProvider;
+            } else {
+              targetProvider = enabledProvidersFromServer[0];
+            }
+            if (targetProvider) {
+              const fallbackModel = getDefaultModelForProvider(targetProvider);
+              DEFAULT_CONFIG.modelConfig.model =
+                targetProvider === normalizedProvider ? model : fallbackModel;
+              DEFAULT_CONFIG.modelConfig.providerName = targetProvider as any;
+            }
           }
 
           return res;
@@ -139,8 +168,17 @@ export const useAccessStore = createPersistStore(
       if (!state.deepseekApiKey && state.openaiApiKey) {
         state.deepseekApiKey = state.openaiApiKey;
       }
-      if (version < 5 || REMOVED_PROVIDERS.includes(state.provider as any)) {
-        state.provider = ServiceProvider.DeepSeek;
+      state.enabledProviders =
+        state.enabledProviders?.length > 0
+          ? state.enabledProviders
+          : [...INITIAL_ENABLED_PROVIDERS];
+      if (
+        version < 5 ||
+        REMOVED_PROVIDERS.includes(state.provider as any) ||
+        (state.enabledProviders.length > 0 &&
+          !state.enabledProviders.includes(state.provider as ServiceProvider))
+      ) {
+        state.provider = state.enabledProviders[0] ?? ServiceProvider.DeepSeek;
       }
       state.defaultModel =
         state.defaultModel || DEFAULT_CONFIG.modelConfig.model;

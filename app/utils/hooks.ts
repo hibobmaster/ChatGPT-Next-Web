@@ -10,12 +10,14 @@ export function useAllModels() {
       configStore.models,
       [configStore.customModels, accessStore.customModels].join(","),
       accessStore.defaultModel,
+      accessStore.enabledProviders,
     );
   }, [
     accessStore.customModels,
     accessStore.defaultModel,
     configStore.customModels,
     configStore.models,
+    accessStore.enabledProviders,
   ]);
 
   return models;

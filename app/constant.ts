@@ -79,6 +79,11 @@ export enum ServiceProvider {
   DeepSeek = "DeepSeek",
 }
 
+export const DEFAULT_ENABLED_PROVIDERS: ServiceProvider[] = [
+  ServiceProvider.Google,
+  ServiceProvider.DeepSeek,
+];
+
 // Google API safety settings, see https://ai.google.dev/gemini-api/docs/safety-settings
 // BLOCK_NONE will not block any content, and BLOCK_ONLY_HIGH will block only high-risk content.
 export enum GoogleSafetySettingsThreshold {

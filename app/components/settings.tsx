@@ -323,7 +323,7 @@ export function Settings() {
     </ListItem>
   );
 
-  const enabledProviders = [ServiceProvider.DeepSeek, ServiceProvider.Google];
+  const enabledProviders = accessStore.enabledProviders ?? [];
 
   const googleConfigComponent = accessStore.provider ===
     ServiceProvider.Google && (

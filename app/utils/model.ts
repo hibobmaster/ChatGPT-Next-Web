@@ -1,4 +1,8 @@
-import { DEFAULT_MODELS, ServiceProvider } from "../constant";
+import {
+  DEFAULT_ENABLED_PROVIDERS,
+  DEFAULT_MODELS,
+  ServiceProvider,
+} from "../constant";
 import { LLMModel } from "../client/api";
 
 const CustomSeq = {
@@ -15,10 +19,12 @@ const CustomSeq = {
   },
 };
 
-const ENABLED_PROVIDERS = new Set<string>([
-  ServiceProvider.Google.toLowerCase(),
-  ServiceProvider.DeepSeek.toLowerCase(),
-]);
+const normalizeProviders = (providers: readonly string[]) =>
+  new Set(
+    providers
+      .filter((provider) => !!provider)
+      .map((provider) => provider.toLowerCase()),
+  );
 
 const customProvider = (providerName: string) => ({
   id: providerName.toLowerCase(),
@@ -56,6 +62,7 @@ export function getModelProvider(modelWithProvider: string): [string, string?] {
 export function collectModelTable(
   models: readonly LLMModel[],
   customModels: string,
+  enabledProviders: readonly string[] = DEFAULT_ENABLED_PROVIDERS,
 ) {
   const modelTable: Record<
     string,
@@ -137,14 +144,15 @@ export function collectModelTable(
       }
     });
 
+  const enabledProviderSet = normalizeProviders(enabledProviders);
   const filteredTable: typeof modelTable = {};
   Object.entries(modelTable).forEach(([key, model]) => {
     const providerName = model.provider?.providerName?.toLowerCase();
     const providerId = model.provider?.id?.toLowerCase();
     if (
       providerName &&
-      (ENABLED_PROVIDERS.has(providerName) ||
-        (providerId && ENABLED_PROVIDERS.has(providerId)))
+      (enabledProviderSet.has(providerName) ||
+        (providerId && enabledProviderSet.has(providerId)))
     ) {
       filteredTable[key] = model;
     }
@@ -157,8 +165,9 @@ export function collectModelTableWithDefaultModel(
   models: readonly LLMModel[],
   customModels: string,
   defaultModel: string,
+  enabledProviders: readonly string[] = DEFAULT_ENABLED_PROVIDERS,
 ) {
-  let modelTable = collectModelTable(models, customModels);
+  let modelTable = collectModelTable(models, customModels, enabledProviders);
   if (defaultModel && defaultModel !== "") {
     if (defaultModel.includes("@")) {
       if (defaultModel in modelTable) {
@@ -185,8 +194,9 @@ export function collectModelTableWithDefaultModel(
 export function collectModels(
   models: readonly LLMModel[],
   customModels: string,
+  enabledProviders: readonly string[] = DEFAULT_ENABLED_PROVIDERS,
 ) {
-  const modelTable = collectModelTable(models, customModels);
+  const modelTable = collectModelTable(models, customModels, enabledProviders);
   let allModels = Object.values(modelTable);
 
   allModels = sortModelTable(allModels);
@@ -198,11 +208,13 @@ export function collectModelsWithDefaultModel(
   models: readonly LLMModel[],
   customModels: string,
   defaultModel: string,
+  enabledProviders: readonly string[] = DEFAULT_ENABLED_PROVIDERS,
 ) {
   const modelTable = collectModelTableWithDefaultModel(
     models,
     customModels,
     defaultModel,
+    enabledProviders,
   );
   let allModels = Object.values(modelTable);
 

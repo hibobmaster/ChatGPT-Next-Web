@@ -1,5 +1,5 @@
 import md5 from "spark-md5";
-import { DEFAULT_MODELS, DEFAULT_GA_ID } from "../constant";
+import { DEFAULT_MODELS, DEFAULT_GA_ID, ServiceProvider } from "../constant";
 import { isGPT4Model } from "../utils/model";
 
 declare global {
@@ -97,6 +97,13 @@ export const getServerSideConfig = () => {
 
   const isGoogle = !!process.env.GOOGLE_API_KEY;
   const isDeepSeek = !!process.env.DEEPSEEK_API_KEY;
+  const enabledProviders: ServiceProvider[] = [];
+  if (isGoogle) {
+    enabledProviders.push(ServiceProvider.Google);
+  }
+  if (isDeepSeek) {
+    enabledProviders.push(ServiceProvider.DeepSeek);
+  }
   // const apiKeyEnvVar = process.env.OPENAI_API_KEY ?? "";
   // const apiKeys = apiKeyEnvVar.split(",").map((v) => v.trim());
   // const randomIndex = Math.floor(Math.random() * apiKeys.length);
@@ -117,6 +124,7 @@ export const getServerSideConfig = () => {
     isDeepSeek,
     deepseekUrl: process.env.DEEPSEEK_URL,
     deepseekApiKey: getApiKey(process.env.DEEPSEEK_API_KEY),
+    enabledProviders,
 
     cloudflareAccountId: process.env.CLOUDFLARE_ACCOUNT_ID,
     cloudflareKVNamespaceId: process.env.CLOUDFLARE_KV_NAMESPACE_ID,
