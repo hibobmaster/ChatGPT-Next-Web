@@ -52,10 +52,6 @@ const Chat = dynamic(async () => (await import("./chat")).Chat, {
   loading: () => <Loading noLogo />,
 });
 
-const PluginPage = dynamic(async () => (await import("./plugin")).PluginPage, {
-  loading: () => <Loading noLogo />,
-});
-
 const SearchChat = dynamic(
   async () => (await import("./search-chat")).SearchChatPage,
   {
@@ -188,7 +184,6 @@ function Screen() {
         <WindowContent>
           <Routes>
             <Route path={Path.Home} element={<Chat />} />
-            <Route path={Path.Plugins} element={<PluginPage />} />
             <Route path={Path.SearchChat} element={<SearchChat />} />
             <Route path={Path.Chat} element={<Chat />} />
             <Route path={Path.Settings} element={<Settings />} />

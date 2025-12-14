@@ -1,7 +1,6 @@
 export const OWNER = "hibobmaster";
 export const REPO = "ChatGPT-Next-Web";
 export const REPO_URL = `https://github.com/${OWNER}/${REPO}`;
-export const PLUGINS_REPO_URL = `https://github.com/${OWNER}/NextChat-Awesome-Plugins`;
 export const ISSUE_URL = `https://github.com/${OWNER}/${REPO}/issues`;
 export const UPDATE_URL = `${REPO_URL}#keep-updated`;
 export const RELEASE_URL = `${REPO_URL}/releases`;
@@ -23,7 +22,6 @@ export enum Path {
   Settings = "/settings",
   NewChat = "/new-chat",
   Masks = "/masks",
-  Plugins = "/plugins",
   Auth = "/auth",
   Sd = "/sd",
   SdNew = "/sd-new",
@@ -50,7 +48,6 @@ export enum FileName {
 
 export enum StoreKey {
   Chat = "chat-next-web-store",
-  Plugin = "chat-next-web-plugin",
   Access = "access-control",
   Config = "app-config",
   Mask = "mask-store",

@@ -460,47 +460,6 @@ const en: LocaleType = {
       View: "View",
     },
   },
-  Plugin: {
-    Name: "Plugin",
-    Page: {
-      Title: "Plugins",
-      SubTitle: (count: number) => `${count} plugins`,
-      Search: "Search Plugin",
-      Create: "Create",
-      Find: "You can find awesome plugins on github: ",
-    },
-    Item: {
-      Info: (count: number) => `${count} method`,
-      View: "View",
-      Edit: "Edit",
-      Delete: "Delete",
-      DeleteConfirm: "Confirm to delete?",
-    },
-    Auth: {
-      None: "None",
-      Basic: "Basic",
-      Bearer: "Bearer",
-      Custom: "Custom",
-      CustomHeader: "Parameter Name",
-      Token: "Token",
-      Proxy: "Using Proxy",
-      ProxyDescription: "Using proxies to solve CORS error",
-      Location: "Location",
-      LocationHeader: "Header",
-      LocationQuery: "Query",
-      LocationBody: "Body",
-    },
-    EditModal: {
-      Title: (readonly: boolean) =>
-        `Edit Plugin ${readonly ? "(readonly)" : ""}`,
-      Download: "Download",
-      Auth: "Authentication Type",
-      Content: "OpenAPI Schema",
-      Load: "Load From URL",
-      Method: "Method",
-      Error: "OpenAPI Schema Error",
-    },
-  },
   Mask: {
     Name: "Mask",
     Page: {

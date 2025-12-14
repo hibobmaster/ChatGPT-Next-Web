@@ -5,7 +5,7 @@ global.fetch = jest.fn((url) =>
   Promise.resolve({
     ok: true,
     status: 200,
-    json: () => Promise.resolve(typeof url === "string" && url.includes("plugins") ? [] : {}),
+    json: () => Promise.resolve({}),
     headers: new Headers(),
     redirected: false,
     statusText: "OK",

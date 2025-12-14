@@ -7,13 +7,7 @@ import {
   LLMUsage,
   SpeechOptions,
 } from "../api";
-import {
-  useAccessStore,
-  useAppConfig,
-  useChatStore,
-  usePluginStore,
-  ChatMessageTool,
-} from "@/app/store";
+import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 import { stream } from "@/app/utils/chat";
 import { getClientConfig } from "@/app/config/client";
 import { GEMINI_BASE_URL } from "@/app/constant";
@@ -25,8 +19,6 @@ import {
   getTimeoutMSByModel,
 } from "@/app/utils";
 import { preProcessImageContent } from "@/app/utils/chat";
-import { nanoid } from "nanoid";
-import { RequestPayload } from "./types";
 import { fetch } from "@/app/utils/stream";
 
 export class GeminiProApi implements LLMApi {
@@ -197,85 +189,22 @@ export class GeminiProApi implements LLMApi {
       );
 
       if (shouldStream) {
-        const [tools, funcs] = usePluginStore
-          .getState()
-          .getAsTools(
-            useChatStore.getState().currentSession().mask?.plugin || [],
-          );
         return stream(
           chatPath,
           requestPayload,
           getHeaders(),
-          // @ts-ignore
-          tools.length > 0
-            ? // @ts-ignore
-              [{ functionDeclarations: tools.map((tool) => tool.function) }]
-            : [],
-          funcs,
+          [],
+          {},
           controller,
           // parseSSE
-          (text: string, runTools: ChatMessageTool[]) => {
-            // console.log("parseSSE", text, runTools);
+          (text: string) => {
             const chunkJson = JSON.parse(text);
-
-            const functionCall = chunkJson?.candidates
-              ?.at(0)
-              ?.content.parts.at(0)?.functionCall;
-            if (functionCall) {
-              const { name, args } = functionCall;
-              runTools.push({
-                id: nanoid(),
-                type: "function",
-                function: {
-                  name,
-                  arguments: JSON.stringify(args), // utils.chat call function, using JSON.parse
-                },
-              });
-            }
             return chunkJson?.candidates
               ?.at(0)
               ?.content.parts?.map((part: { text: string }) => part.text)
               .join("\n\n");
           },
-          // processToolMessage, include tool_calls message and tool call results
-          (
-            requestPayload: RequestPayload,
-            toolCallMessage: any,
-            toolCallResult: any[],
-          ) => {
-            // @ts-ignore
-            requestPayload?.contents?.splice(
-              // @ts-ignore
-              requestPayload?.contents?.length,
-              0,
-              {
-                role: "model",
-                parts: toolCallMessage.tool_calls.map(
-                  (tool: ChatMessageTool) => ({
-                    functionCall: {
-                      name: tool?.function?.name,
-                      args: JSON.parse(tool?.function?.arguments as string),
-                    },
-                  }),
-                ),
-              },
-              // @ts-ignore
-              ...toolCallResult.map((result) => ({
-                role: "function",
-                parts: [
-                  {
-                    functionResponse: {
-                      name: result.name,
-                      response: {
-                        name: result.name,
-                        content: result.content, // TODO just text content...
-                      },
-                    },
-                  },
-                ],
-              })),
-            );
-          },
+          () => {},
           options,
         );
       } else {

@@ -1,12 +1,12 @@
 ## QuanQuanChat (ChatGPT Next Web)
 
-QuanQuanChat (aka ChatGPT Next Web) is a privacy-first chat platform built with Next.js and React 19. It provides a modular interface for managing prompts, plugins, and provider lists so you can host a self‑service ChatGPT experience for the web.
+QuanQuanChat (aka ChatGPT Next Web) is a privacy-first chat platform built with Next.js and React 19. It provides a modular interface for managing prompts and provider lists so you can host a self‑service ChatGPT experience for the web.
 
 ## Features
 
 - Framework: Next.js 16+ with the App Router and React 19 powering a responsive UI plus built-in analytics, markdown rendering, and KaTeX support.
 - Prompt masks: `app/masks` defines reusable masks that are compiled into `public/masks.json` via `pnpm mask`, making it easy to keep localized prompt libraries in sync.
-- Plugins & prompts: Built-in registries under `public/plugins.json` and `public/prompts.json` let you ship curated prompt sets and OpenAPI-style tools out of the box.
+- Prompt registries: Built-in registry under `public/prompts.json` lets you ship curated prompt sets out of the box.
 - Provider & model control: Environment flags cover OpenAI plus DeepSeek and Google fallbacks, plus fine-grained defaults like `CUSTOM_MODELS`, `DEFAULT_MODEL`, and `VISION_MODELS`.
 - Security & access: Optional `CODE` gate, toggle-able GPT-4 access (`DISABLE_GPT4`), and optional hidden-key mode (`HIDE_USER_API_KEY`) let you control who interacts with the service.
 - Proxy-ready builds: Docker image and proxy scripts (`scripts/init-proxy.sh`, `proxychains.conf`) make it easy to run behind `PROXY_URL` or VPN tunnels.
@@ -99,7 +99,7 @@ QuanQuanChat (aka ChatGPT Next Web) is a privacy-first chat platform built with 
 ## Project structure
 
 - `app/` – Next.js `app` router entrypoint, API routes, stores, UI components, localization, prompts, masks, and store logic.
-- `public/` – compiled prompts (`prompts.json`), plugin schema (`plugins.json`), and generated masks (`masks.json`).
+- `public/` – compiled prompts (`prompts.json`) and generated masks (`masks.json`).
 - `scripts/` – helper scripts such as prompt fetcher, proxy init, and setup helper for new machines.
 - `Dockerfile` / `docker-compose.yml` – containerized deployment with proxy configuration baked-in.
 

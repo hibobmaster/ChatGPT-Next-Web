@@ -5,7 +5,6 @@ import { RequestMessage } from "./client/api";
 import {
   REQUEST_TIMEOUT_MS,
   REQUEST_TIMEOUT_MS_FOR_THINKING,
-  ServiceProvider,
 } from "./constant";
 import { VISION_MODEL_REGEXES, EXCLUDE_VISION_MODEL_REGEXES } from "./constant";
 import { useAccessStore } from "./store";
@@ -298,14 +297,6 @@ export function getModelSizes(model: string): ModelSize[] {
 
 export function supportsCustomSize(model: string): boolean {
   return getModelSizes(model).length > 0;
-}
-
-export function showPlugins(provider: ServiceProvider, model: string) {
-  if (provider == ServiceProvider.DeepSeek) return true;
-  if (provider == ServiceProvider.Google && !model.includes("vision")) {
-    return true;
-  }
-  return false;
 }
 
 export function fetch(
