@@ -5,17 +5,22 @@ on:
   release:
     types: [published]
 
+env:
+  IMAGE_NAME: hibobmaster/chatgpt-next-web
+
 jobs:
   push_to_registry:
-    name: Push Docker image to Docker Hub (${{ matrix.platform }})
+    name: Build and push per-arch image
     strategy:
       fail-fast: false
       matrix:
         include:
           - platform: linux/amd64
             runner: ubuntu-latest
+            archSuffix: amd64
           - platform: linux/arm64
             runner: ubuntu-24.04-arm
+            archSuffix: arm64
     runs-on: ${{ matrix.runner }}
     steps:
       -
@@ -27,30 +32,65 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      
+      -
+        name: Calculate tag base
+        id: tag_base
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG_BASE="${GITHUB_REF#refs/tags/}"
+          else
+            TAG_BASE="latest"
+          fi
+          echo "TAG_BASE=${TAG_BASE}" >> "$GITHUB_ENV"
       - 
-        name: Extract metadata (tags, labels) for Docker
+        name: Extract metadata for Docker labels
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: hibobmaster/chatgpt-next-web
-          tags: |
-            type=raw,value=latest
-            type=ref,event=tag
-      
+          images: ${{ env.IMAGE_NAME }}
       - 
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
       - 
-        name: Build and push Docker image
+        name: Build and push platform-specific image
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: ${{ matrix.platform }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            type=raw,value=${{ env.TAG_BASE }}-${{ matrix.archSuffix }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  create_manifest:
+    name: Publish multi-arch manifest
+    needs: push_to_registry
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Calculate tag base
+        id: tag_base_manifest
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG_BASE="${GITHUB_REF#refs/tags/}"
+          else
+            TAG_BASE="latest"
+          fi
+          echo "TAG_BASE=${TAG_BASE}" >> "$GITHUB_ENV"
+      -
+        name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      -
+        name: Create and push manifest
+        run: |
+          docker manifest create \
+            ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }} \
+            ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}-amd64 \
+            ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}-arm64
+          docker manifest push ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}
             
