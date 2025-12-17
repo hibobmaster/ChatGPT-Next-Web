@@ -56,8 +56,6 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}-${{ env.RUN_SUFFIX }}-amd64
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
   build_arm64:
     name: Build and push linux/arm64
@@ -106,5 +104,4 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.TAG_BASE }}-${{ env.RUN_SUFFIX }}-arm64
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+
