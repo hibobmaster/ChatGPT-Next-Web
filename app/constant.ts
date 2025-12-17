@@ -252,12 +252,7 @@ export const GEMINI_SUMMARIZE_MODEL = "gemini-2.0-flash";
 export const DEEPSEEK_SUMMARIZE_MODEL = "deepseek-chat";
 export const SUMMARIZE_MODEL = DEEPSEEK_SUMMARIZE_MODEL;
 
-export const VISION_MODEL_REGEXES = [
-  /vision/,
-  /gemini-2\.0/,
-  /gemini-2\.5/,
-  /vl/i,
-];
+export const VISION_MODEL_REGEXES = [/vision/, /gemini-.*/, /vl/i];
 
 export const EXCLUDE_VISION_MODEL_REGEXES = [/claude-3-5-haiku-20241022/];
 
@@ -265,6 +260,7 @@ const googleModels = [
   "gemini-2.5-flash",
   "gemini-2.5-flash-lite",
   "gemini-2.5-pro",
+  "gemini-3-flash-preview",
 ];
 
 const deepseekModels = ["deepseek-chat", "deepseek-reasoner"];
